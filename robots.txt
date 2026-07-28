@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jkqq147-team.github.io/dinghai-legal/sitemap.xml
