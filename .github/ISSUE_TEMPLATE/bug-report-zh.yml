@@ -1,0 +1,62 @@
+name: "Bug / 隐私反馈（中文）"
+description: "报告 App 问题或隐私相关反馈"
+title: "[Bug/Privacy Feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请勿提交手机号、邮箱、账号、身份证件、精确位置、访问令牌或其他敏感信息；粘贴日志前请先脱敏。
+
+  - type: input
+    id: device
+    attributes:
+      label: "设备型号"
+      placeholder: "例如：iPhone 15、iPad Pro"
+    validations:
+      required: true
+
+  - type: input
+    id: ios-version
+    attributes:
+      label: "iOS 版本"
+      placeholder: "例如：iOS 17.5"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "App 版本"
+      placeholder: "例如：1.2.3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: "复现步骤"
+      description: "请按顺序说明操作步骤，以及实际结果和预期结果。"
+      placeholder: |
+        1. 打开……
+        2. 点击……
+        3. 出现……
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "相关日志（可选，建议填写）"
+      description: "如有相关日志，请先脱敏再粘贴。"
+      render: shell
+
+  - type: checkboxes
+    id: sensitive-information
+    attributes:
+      label: "敏感信息确认"
+      description: "公开 Issue 的内容对所有人可见。"
+      options:
+        - label: "如适用，我已移除船位、轨迹信息。"
+        - label: "如适用，我已移除账户信息及其他隐私信息。"
+        - label: "我确认不会提交任何敏感数据。"
+          required: true

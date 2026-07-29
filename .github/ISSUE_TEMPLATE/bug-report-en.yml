@@ -1,0 +1,62 @@
+name: "Bug / Privacy Feedback (English)"
+description: "Report an app problem or privacy concern"
+title: "[Bug/Privacy Feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Do not include phone numbers, email addresses, account details, identity documents, precise locations, access tokens, or other sensitive information. Remove sensitive data from logs before pasting them here.
+
+  - type: input
+    id: device
+    attributes:
+      label: "Device model"
+      placeholder: "For example: iPhone 15 or iPad Pro"
+    validations:
+      required: true
+
+  - type: input
+    id: ios-version
+    attributes:
+      label: "iOS version"
+      placeholder: "For example: iOS 17.5"
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "App version"
+      placeholder: "For example: 1.2.3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: "Steps to reproduce"
+      description: "List the steps in order, including the actual and expected results."
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Relevant logs (optional, recommended)"
+      description: "If relevant logs are available, remove sensitive data before pasting them here."
+      render: shell
+
+  - type: checkboxes
+    id: sensitive-information
+    attributes:
+      label: "Sensitive information confirmation"
+      description: "Everything posted in a public issue is visible to everyone."
+      options:
+        - label: "Where applicable, I have removed vessel positions and tracks."
+        - label: "Where applicable, I have removed account details and other private information."
+        - label: "I confirm that I will not submit any sensitive data."
+          required: true
