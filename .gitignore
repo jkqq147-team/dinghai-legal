@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs and temp files
+*.log
+tmp/
+*.tmp
+
+# Environment / secrets (never commit)
+.env
+.env.*
+
+# Node tooling (if ever introduced for scripts)
+node_modules/
+
+# Local agent worktrees
+.worktrees/
