@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="定海 App 隐私政策：位置数据、本地守锚记录、权限、保留与删除说明。">
+  <meta name="description" content="定海 App 隐私政策：位置数据、iCloud 私有记录、账户、远程守锚、保留与删除说明。">
   <title>隐私政策｜定海</title>
   <link rel="canonical" href="https://dinghai.app/privacy/">
   <link rel="alternate" hreflang="zh-Hans" href="https://dinghai.app/privacy/">
@@ -25,10 +25,9 @@
     <header class="hero">
       <h1>隐私政策</h1>
       <p class="lede">
-        定海当前发布版本不创建用户账户，不接入广告或分析服务，也不会把你的船位或守锚记录发送给开发者。
+        定海不接入广告或第三方分析服务。你可以选择通过 Apple 登录使用定海账户；本机守锚不需要账户，也不依赖定海服务器。
       </p>
-      <p class="meta">生效日期：2026 年 7 月 28 日（本版本）</p>
-      <p class="meta">若未来版本引入新功能或外部服务（含广告、分析类能力），本页及生效日期将同步更新。</p>
+      <p class="meta">生效日期：2026 年 8 月 7 日</p>
     </header>
 
     <div class="policy-list">
@@ -38,7 +37,7 @@
       </section>
 
       <section class="policy-section">
-        <h2>2. 设备上的位置处理</h2>
+        <h2>2. 本机位置处理与守锚记录</h2>
         <p>守锚期间，定海在你的设备上处理精确船位，用于：</p>
         <ul>
           <li>在地图上部署锚点并计算船舶与锚点之间的距离；</li>
@@ -46,58 +45,79 @@
           <li>绘制本次守锚的移动轨迹；</li>
           <li>在锁屏或后台继续守锚，并在发生走锚风险时提醒你。</li>
         </ul>
-        <p>定海没有开发者服务器，不会把精确船位或轨迹传输给开发者。</p>
-      </section>
-
-      <section class="policy-section">
-        <h2>3. 本地记录</h2>
         <p>
-          锚点、轨迹、安全范围、开始与结束时间、最大偏移距离和显示偏好保存在 App 的本地数据容器中。
-          这些数据用于恢复进行中的守锚、展示历史记录和保存你的常用设置。
+          锚点、轨迹、安全范围、时间、最大偏移、显示偏好和你主动选择的守锚照片先保存在 App 的本地数据容器中，
+          并可由 Apple CloudKit 同步到你同一 iCloud 账户的私有数据库。它们不会因为登录定海账户而自动上传到定海服务器。
         </p>
-        <p>在本发布版本，定海不创建用户账户，不会用这些记录建立用户画像，也不会用于广告、分析或跨 App 跟踪。</p>
+        <p>本机定位、距离判断和警报始终在设备上运行；账户、网络或远程服务不可用时，本机守锚仍可继续。</p>
       </section>
 
       <section class="policy-section">
-        <h2>4. Apple 系统服务</h2>
+        <h2>3. 定海账户与身份验证</h2>
+        <p>通过 Apple 登录是可选功能。登录后，定海服务器会处理：</p>
+        <ul>
+          <li>由 Apple 身份关联生成的定海内部账户标识；</li>
+          <li>设备标识、平台和系统提供的设备显示名称；</li>
+          <li>定海访问与刷新会话的哈希或状态；</li>
+          <li>加密保存的 Apple refresh token，仅用于账户删除时撤销 Apple 授权。</li>
+        </ul>
+        <p>定海不会要求或保存你的 Apple ID 密码。移动端的定海会话令牌保存在设备钥匙串中。</p>
+      </section>
+
+      <section class="policy-section">
+        <h2>4. 远程守锚数据</h2>
+        <p>
+          只有当你使用远程守锚功能时，定海服务器才会处理与该远程会话有关的锚点坐标、安全范围、
+          设备上报的最新船位及精度、距锚距离、监控状态、主控设备、交接状态和会话时间。
+          这些数据用于让你的设备查看同一状态并安全交接主控。
+        </p>
+        <p>本机历史轨迹和守锚照片不会作为远程会话自动上传，也不会用于广告、用户画像或跨 App 跟踪。</p>
+      </section>
+
+      <section class="policy-section">
+        <h2>5. Apple 与基础设施服务</h2>
         <p>
           地图、设备定位、通知和实时活动由 Apple 的 MapKit、Core Location、UserNotifications、
-          ActivityKit 等系统服务提供。Apple 对相关系统服务的数据处理适用其自身的隐私政策。
-          定海不会接入其他第三方 SDK。
+          ActivityKit 等系统服务提供；本机记录可通过 Apple CloudKit 私有数据库同步。
+          Apple 对这些系统服务的数据处理适用其自身的隐私政策。
         </p>
+        <p>定海使用 Cloudflare Workers、D1 和 Durable Objects 提供账户与远程守锚服务。定海不接入广告 SDK 或第三方分析 SDK。</p>
       </section>
 
       <section class="policy-section">
-        <h2>5. 权限</h2>
+        <h2>6. 权限</h2>
         <ul>
           <li><strong>使用 App 期间的位置：</strong>显示当前船位、部署锚点并计算锚距。</li>
           <li><strong>始终允许与精确位置：</strong>锁屏、切换 App 或系统按位置条件唤醒时持续守锚。</li>
           <li><strong>通知：</strong>在走锚风险出现时发送提醒。</li>
         </ul>
-        <p>定海不请求麦克风、相机、照片或通讯录权限，也不会录音。</p>
+        <p>定海不请求麦克风、相机或通讯录权限，也不会录音。只有你通过系统照片选择器主动选择的照片才会进入守锚记录。</p>
       </section>
 
       <section class="policy-section">
-        <h2>6. 保留、删除与控制</h2>
+        <h2>7. 保留、删除与控制</h2>
         <p>
-          守锚记录会保留在 App 的本地数据容器中，直到你在 App 内逐条删除。删除定海 App 会移除其本地数据。
-          设备备份的处理取决于你使用的 Apple 系统备份设置。
+          本机与 iCloud 私有数据库中的守锚记录会保留到你在 App 内逐条删除；删除 App 只移除当前设备上的本地副本，
+          已同步到 iCloud 的记录可能在重新安装或其他设备上恢复。
         </p>
         <p>
-          你可以随时在系统“设置”中撤销定位或通知权限。撤销守锚所需权限会停止相应保护能力。
+          你可以在 App 的账户页面退出登录或删除定海账户。删除账户会关闭并清空服务器上的远程守锚会话、
+          撤销 Apple 授权，并删除服务器上的账户、设备和定海会话数据；本机和 iCloud 私有记录不会随服务器账户自动删除。
         </p>
+        <p>你可以随时在系统“设置”中撤销定位或通知权限。撤销守锚所需权限会停止相应保护能力。</p>
       </section>
 
       <section class="policy-section">
-        <h2>7. 数据收集与共享</h2>
+        <h2>8. 数据使用与共享</h2>
         <p>
-          在本发布版本下，定海不向开发者或广告、分析、数据经纪等第三方收集、出售或共享个人数据。
-          本网站在本发布版本同样不使用 Cookie、访问统计、跟踪像素或第三方字体。
+          定海仅为提供账户、跨设备远程守锚、安全与支持目的处理上述数据，不出售个人数据，
+          也不与广告、分析或数据经纪服务共享。除 Apple 和 Cloudflare 提供相关系统或基础设施处理外，定海不会将这些数据提供给其他第三方。
         </p>
+        <p>本网站不使用 Cookie、访问统计、跟踪像素或第三方字体。</p>
       </section>
 
       <section class="policy-section">
-        <h2>8. 使用边界</h2>
+        <h2>9. 使用边界</h2>
         <p>
           定海是辅助守锚工具，不提供紧急救援或船舶控制，也不能替代安全锚泊程序、人工值守和合规船载设备。
           请始终保留独立的安全措施。
@@ -105,7 +125,7 @@
       </section>
 
       <section class="policy-section">
-        <h2>9. 政策更新与联系</h2>
+        <h2>10. 政策更新与联系</h2>
         <p>如果数据处理方式发生实质变化，我们会同步更新本页面、App Store 的隐私标签，并在适当情况下通过 App 告知你。</p>
         <p>
           如有隐私问题，请通过
