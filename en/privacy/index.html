@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="DingHai Privacy Policy covering location data, private iCloud records, accounts, remote anchor watch, retention, and deletion.">
+  <meta name="description" content="DingHai Privacy Policy covering location data, anchor-watch records and tracks, accounts and record sync, remote anchor watch, retention, and deletion.">
   <title>Privacy Policy | DingHai</title>
   <link rel="canonical" href="https://dinghai.app/en/privacy/">
   <link rel="alternate" hreflang="zh-Hans" href="https://dinghai.app/privacy/">
@@ -27,7 +27,7 @@
       <p class="lede">
         DingHai does not use advertising or third-party analytics services. You may choose to use a DingHai account with Sign in with Apple; local anchor watch requires no account and does not depend on DingHai servers.
       </p>
-      <p class="meta">Effective date: August 7, 2026.</p>
+      <p class="meta">Effective date: October 12, 2026. (The in-app Privacy Policy screen still shows August 13, 2026 and has not yet been updated to match this revision.)</p>
     </header>
 
     <div class="policy-list">
@@ -46,9 +46,18 @@
           <li>continue monitoring on the Lock Screen or in the background and alert you to a potential anchor drag.</li>
         </ul>
         <p>
-          Anchor positions, tracks, safety ranges, times, maximum drift, display preferences, and anchor-watch photos you explicitly select are stored first in the app's local data container and may be synchronized by Apple CloudKit to your private database under the same iCloud account. Signing in to a DingHai account does not automatically upload these records to DingHai servers.
+          Anchor positions, tracks, safety ranges, times, maximum drift, display preferences, and anchor-watch photos you explicitly select are stored first in the app's local data container. DingHai does not synchronize these records through iCloud or CloudKit.
+        </p>
+        <p>
+          After you sign in to a DingHai account, the app automatically uploads completed anchor-watch records (including records saved on the device before you signed in) and photos you explicitly add to them to DingHai servers, and synchronizes them to devices signed in to the same DingHai account. Uploaded content includes the anchor position, safety range, start and end times, maximum drift, anchor-watch track points (position, time, position source, and accuracy), the record name, and the photo.
         </p>
         <p>Local location processing, distance decisions, and alarms remain on the device. Local anchor watch continues when the account, network, or remote service is unavailable.</p>
+        <p>
+          Only after you explicitly start track recording does DingHai save the positions, times, position sources, and position accuracy along your route on the device, to show the track and your track history. Tracks currently remain on the device only; they are not uploaded to DingHai servers and are not included in account sync.
+        </p>
+        <p>
+          If you enter the address of a Signal K service on your boat in the app, DingHai connects to that service to receive onboard data such as vessel position, heading, speed over ground, wind, and depth for marine features including anchor watch. Connecting to a service on your boat's local network requires the iOS Local Network permission. When Signal K is the position source, anchor-watch tracks and tracks record that position source. DingHai does not send your anchor-watch records, tracks, or account information to the Signal K service. After you sign in to a DingHai account, the vessel name and Signal K connection address are synchronized as a vessel profile to DingHai servers and to devices on the same account.
+        </p>
       </section>
 
       <section class="policy-section">
@@ -75,17 +84,18 @@
         <h2>5. Apple and infrastructure services</h2>
         <p>
           Maps, device location, notifications, and Live Activities are provided through Apple system services,
-          including MapKit, Core Location, UserNotifications, and ActivityKit; local records may synchronize through your private Apple CloudKit database. Apple's own privacy policy applies to its processing through those services.
+          including MapKit, Core Location, UserNotifications, and ActivityKit. Apple's own privacy policy applies to its processing through those services.
         </p>
-        <p>DingHai uses Cloudflare Workers, D1, and Durable Objects to provide account and remote anchor-watch services. DingHai includes no advertising SDKs or third-party analytics SDKs.</p>
+        <p>DingHai uses Cloudflare Workers, D1, R2, and Durable Objects to provide account, record-sync, and remote anchor-watch services. DingHai includes no advertising SDKs or third-party analytics SDKs.</p>
       </section>
 
       <section class="policy-section">
         <h2>6. Permissions</h2>
         <ul>
-          <li><strong>Location while using the app:</strong> shows the vessel position, places the anchor, and calculates distance.</li>
-          <li><strong>Always and precise location:</strong> continues anchor watch while locked, in another app, or when iOS wakes the app for a location condition.</li>
+          <li><strong>Location while using the app:</strong> shows the vessel position, places the anchor, calculates distance, or records a track you explicitly start.</li>
+          <li><strong>Always and precise location:</strong> continues anchor watch, or a track recording you started, while locked, in another app, or when iOS wakes the app for a location condition.</li>
           <li><strong>Notifications:</strong> alerts you when an anchor-drag risk is detected.</li>
+          <li><strong>Local Network:</strong> connects to the Signal K service on your boat that you enter and receives onboard data.</li>
         </ul>
         <p>DingHai does not request microphone, camera, or contacts access and does not record audio. Only photos you explicitly choose through the system photo picker are added to anchor-watch records.</p>
       </section>
@@ -93,10 +103,11 @@
       <section class="policy-section">
         <h2>7. Retention, deletion, and control</h2>
         <p>
-          Anchor-watch records in local storage and your private iCloud database remain until you delete them individually in the app. Deleting the app removes only the local copy on that device; records already synchronized to iCloud may return after reinstallation or remain on other devices.
+          Anchor-watch records remain until you delete them individually in the app. When you delete a record that has been synchronized to your DingHai account, the deletion is also synchronized to DingHai servers and to devices on the same account. Deleting the app removes the anchor-watch records and tracks in the app's data container on that device, including records not yet synchronized; anchor-watch records already synchronized to your DingHai account remain on DingHai servers and synchronize to the device again after reinstallation while it is signed in to the same account.
         </p>
+        <p>You can delete tracks individually in the app. Signing out or deleting your DingHai account does not delete tracks on the device.</p>
         <p>
-          You can sign out or delete the DingHai account from the account screen. Account deletion closes and clears remote anchor-watch sessions on DingHai servers, revokes Apple authorization, and deletes server-side account, device, and DingHai session data. Local and private iCloud records are not automatically deleted with the server account.
+          You can sign out or delete the DingHai account from the account screen. Signing out removes anchor-watch records synchronized to that account from the current device; the records on DingHai servers are unaffected and synchronize again when you sign back in. Account deletion closes and clears remote anchor-watch sessions on DingHai servers, deletes anchor-watch record photos on DingHai servers, revokes Apple authorization, and deletes server-side account, device, DingHai session, synchronized anchor-watch record, and vessel profile data; the app then removes anchor-watch records synchronized to that account from the current device. Anchor-watch records on the current device that have not been synchronized are unaffected, and synchronized local copies on other devices are not automatically removed by this action.
         </p>
         <p>You can revoke location or notification access at any time in Settings. Revoking a permission required for anchor watch will stop the corresponding protection.</p>
       </section>
@@ -104,7 +115,7 @@
       <section class="policy-section">
         <h2>8. Use and sharing</h2>
         <p>
-          DingHai processes the data described above only to provide accounts, secure cross-device remote anchor watch, and support. DingHai does not sell personal data or share it with advertising, analytics, or data-broker services. Apart from Apple and Cloudflare processing required to provide system and infrastructure services, DingHai does not provide this data to other third parties.
+          DingHai processes the data described above only to provide accounts, record sync, secure cross-device remote anchor watch, and support. DingHai does not sell personal data or share it with advertising, analytics, or data-broker services. Apart from Apple and Cloudflare processing required to provide system and infrastructure services, DingHai does not provide this data to other third parties.
         </p>
         <p>This website uses no cookies, analytics, tracking pixels, or third-party fonts.</p>
       </section>
