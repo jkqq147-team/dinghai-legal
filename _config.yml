@@ -1,0 +1,10 @@
+# GitHub Pages builds this branch with Jekyll. Pages and assets are plain
+# static files without front matter, so Jekyll copies them through unchanged.
+# Jekyll already skips dotfiles; the explicit list below keeps repository-only
+# files out of the published site. .agents/ holds agent skills used while
+# working on this repo and must not be served.
+theme: null
+exclude:
+  - .agents/
+  - CNAME
+  - README.md
