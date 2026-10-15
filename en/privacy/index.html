@@ -27,7 +27,7 @@
       <p class="lede">
         DingHai does not use advertising or third-party analytics services. You may choose to use a DingHai account with Sign in with Apple; local anchor watch requires no account and does not depend on DingHai servers.
       </p>
-      <p class="meta">Effective date: October 14, 2026</p>
+      <p class="meta">Effective date: October 15, 2026</p>
     </header>
 
     <div class="policy-list">
@@ -83,7 +83,7 @@
         </p>
         <p>Other devices on the same account with sync on receive these facts over a live connection while the app is in the foreground, to view an anchor watch in progress and keep a copy of the record. That connection closes when the app goes to the background, sync is turned off, or the device signs out.</p>
         <p>
-          While an anchor watch is in progress, if the first position reported by the device that started it is already outside the alarm radius, or a new position moves from inside to outside the alarm radius, or DingHai servers have received no new position for about 5 minutes, the server sends an alert through the Apple Push Notification service (APNs) to the account's other devices that are signed in, have sync on, and have completed push registration; the alert is never sent to the device that started the anchor watch. Only positions that are still current when DingHai servers receive them count toward these checks; an older position that arrives late is kept only as part of the record and neither triggers an out-of-range alert nor restarts the 5-minute timer. The alert title contains the vessel name and record name. For this purpose the server stores those devices' APNs push tokens and push environment. When you turn sync off or sign out, the app asks the server to delete that device's push token; the server also deletes the token when the account is deleted or APNs reports the token as no longer valid. Notifications are a supplementary feature and may be delayed or lost; DingHai does not guarantee delivery, and they must not replace the local alarm on the device aboard.
+          While an anchor watch is in progress, if the first position reported by the device that started it is already outside the alarm radius, or a new position moves from inside to outside the alarm radius, or DingHai servers have received no new position for about 5 minutes, the server sends an alert through the Apple Push Notification service (APNs) to the account's other devices that are signed in, have sync on, and have completed push registration; the alert is never sent to the device that started the anchor watch. Only positions that are still current when DingHai servers receive them count toward these checks; an older position that arrives late is kept only as part of the record and neither triggers an out-of-range alert nor restarts the 5-minute timer. When a record name is available, the alert title contains the vessel name and record name; otherwise, it contains only the vessel name. For this purpose the server stores those devices' APNs push tokens and push environment. When you turn sync off or sign out, the app asks the server to delete that device's push token; the server also deletes the token when the account is deleted or APNs reports the token as no longer valid. Notifications are a supplementary feature and may be delayed or lost; DingHai does not guarantee delivery, and they must not replace the local alarm on the device aboard.
         </p>
         <p>
           You can turn off "Sync Anchor-Watch Records" on the app's account screen. When it is off, the app stops uploading this device's anchor-watch facts, stops receiving facts from other devices, and asks the server to delete this device's push token. No records are deleted on the device or on the server as a result; facts not yet uploaded stay on the device and resume uploading when sync is turned back on. While sync is off, copies on other devices are not updated. If this device is running an anchor watch when sync is turned off, after about 5 minutes the server sends a "no position received" alert to the account's other devices with sync on. Local anchor watch is unaffected.
@@ -94,8 +94,10 @@
       <section class="policy-section">
         <h2>5. Apple and infrastructure services</h2>
         <p>
-          Maps, device location, notifications, and Live Activities are provided through Apple system services,
-          including MapKit, Core Location, UserNotifications, and ActivityKit. After an anchor watch starts, DingHai uses MapKit to look up a nearby place name for the anchor coordinates as the record's automatic name. Cross-device alerts are sent through APNs. Apple's own privacy policy applies to its processing through those services.
+          Apple map styles use MapKit; the GSHHG coastline basemap, vector charts, and raster charts are rendered on the device from local data using the MapLibre library.
+          GSHHG basemap downloads and update checks fetch a manifest from resources.dinghai.app; during installation, the app downloads the package specified by that manifest.
+          Device location, notifications, and Live Activities use Apple system services, including Core Location, UserNotifications, and ActivityKit.
+          After an anchor watch starts, DingHai uses MapKit to look up a nearby place name for the anchor coordinates as the record's automatic name. Cross-device alerts are sent through APNs. Apple's own privacy policy applies to its processing through those services.
         </p>
         <p>
           DingHai uses Cloudflare Workers, D1, R2, and Durable Objects to provide accounts, anchor-watch record sync, and alert notifications: D1 stores accounts, identity links, devices, sessions, push tokens, and vessel profiles; one Durable Object per account stores that account's anchor-watch fact log; and R2 stores anchor-watch photos. DingHai includes no advertising SDKs or third-party analytics SDKs.
@@ -116,7 +118,9 @@
       <section class="policy-section">
         <h2>7. Retention, deletion, and control</h2>
         <p>
-          Ended anchor-watch records remain until you delete them individually in the app. An anchor watch with no end that has had no new position for more than 7 days is shown as "unfinished", and the app currently offers no option to delete such a record. When you delete a synchronized record, the server deletes all of that record's facts and photos and keeps only a deletion marker with no anchor-watch content, so that the account's other devices delete their copies. A record deleted while sync is off is deleted from the server after sync is turned back on.
+          Ended anchor-watch records remain until you delete them individually in the app. On other devices, an anchor watch with no end can be shown as "unfinished" after more than 7 days without a new position (counted from the start if no position has been received).
+          The device that started the watch still restores its newest local watch with no end, regardless of age, and excludes it from the logbook. The app currently offers no option to delete an anchor-watch record without an end.
+          When you delete a synchronized record, the server deletes all of that record's facts and photos and keeps only a deletion marker with no anchor-watch content, so that the account's other devices delete their copies. A record deleted while sync is off is deleted from the server after sync is turned back on.
         </p>
         <p>
           Deleting the app removes the anchor-watch records, photos, and tracks in the app's data on that device, including records not yet uploaded; anchor-watch records already uploaded to your DingHai account remain on DingHai servers and synchronize to the device again after reinstallation once you sign in to the same account with sync on.
