@@ -49,7 +49,10 @@ export default defineConfig({
 						{ label: '4. 瓦片内容', link: '/developers/chartset/tiles/' },
 						{ label: '5. 数据清单', link: '/developers/chartset/data/' },
 						{ label: '6. 自检', link: '/developers/chartset/self-check/' },
-						{ label: '7. 无 manifest 的矢量 MBTiles', link: '/developers/chartset/vector-mbtiles/' },
+						{
+							label: '附录（不属于海图集格式）',
+							items: [{ label: '附录 7. 无 manifest 的矢量 MBTiles', link: '/developers/chartset/vector-mbtiles/' }],
+						},
 					],
 				},
 			],

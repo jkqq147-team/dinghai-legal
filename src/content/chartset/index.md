@@ -1,36 +1,38 @@
 ---
 title: 定海海图集接入手册 v1
-description: 外部生产方生成定海海图集的输入契约：目录、manifest、瓦片剖面与自检方法。
+description: 定海海图集的数据契约：文件结构、字段含义、App 拒绝导入的条件。
 ---
 
-本文是外部生产方生成**定海海图集**的输入契约，包含目录、manifest、瓦片剖面与自检方法；样式、图标和字体不由生产方提供。[第 7 节](/developers/chartset/vector-mbtiles/)另列本地导入无 manifest 矢量 MBTiles 的首批规则；不改变已有 manifest 包的合同。
+本文对应 manifest 格式 `1.x`（当前 `1.1`）和瓦片剖面 `1`。大版本一变，App 拒绝旧版本的海图集，按新版本重新生成（[2.4](/developers/chartset/manifest/#2.4)）。
 
-本文是正式版 v1，对应 manifest 格式 `1.x`（当前 `1.1`）和瓦片剖面 `1`。版本规则见[第 2.4 节](/developers/chartset/manifest/#2.4)：大版本一变，App 拒绝旧版本的海图集，生产方要按新版本重新生成。
+用语：
 
-文中“App 校验”指违反即在导入时拒绝的条件；“要求”指生产方须遵守的约定。当前可消费但不属于规范的写法单独注明，不保证后续支持；导入成功不等于全部瓦片可绘制、可点选。
+- App 拒绝导入的条件和代码见 [6.3](/developers/chartset/self-check/#6.3)：目录与 ZIP 的结构、manifest、文件是否齐全、MBTiles 的 `dh_profile`。除此之外，App 导入时不检查本手册的其他要求（瓦片内容、`bounds` 是否包住数据、id 等），导入成功不等于全部瓦片都能正确显示和点选。
 
 ## 0. 速览
 
-- 海图集的内容根是一个文件夹：`manifest.json` + `chart.mbtiles`，可选再加一个只有一级的概览瓦片集 `overview.mbtiles`（[3.3](/developers/chartset/mbtiles/#3.3)）。可直接导入目录，也可将相同内容打成 ZIP；内容根可以在所选目录／ZIP 根部，或在单层纯包装目录内（[第 1 节](/developers/chartset/structure/)）。
-- `chart.mbtiles` 是 MBTiles 1.3 矢量瓦片集（MVT，gzip 压缩，TMS 行号，Web Mercator 瓦片网格），metadata 里写 `dh_profile = 1`。
-- 每个 source-layer 是一个 S-57 物标类缩写（`DEPARE`、`BOYLAT`、`WRECKS` …），属性用 S-57 属性缩写，值按 S-57 属性类型编码。
-- 面状物标要画边线时，另写一条带 `dh_boundary = 1` 的线放在同一 source-layer。
-- 最小样例：[`minimal-chartset.zip`](/developers/chartset/downloads/minimal-chartset.zip)，由参考生成脚本 [`generate-chartset-sample.py`](/developers/chartset/downloads/generate-chartset-sample.py) 生成（只用 Python 标准库，可当参考实现）。
-- 自检：在真机 App 里导入海图集，走与用户相同的导入路径（[第 6 节](/developers/chartset/self-check/)）；测试 ZIP 时直接导入 ZIP，不以解压目录替代。
+- 海图集是一个文件夹：`manifest.json` + `chart.mbtiles`，可选再加只有一级的概览瓦片集 `overview.mbtiles`。可导入文件夹，也可导入相同内容的 ZIP（[第 1 节](/developers/chartset/structure/)）。
+- `chart.mbtiles` 是 MBTiles 1.3 矢量瓦片集：gzip 压缩的 MVT，TMS 行号，Web Mercator 网格，metadata 写 `dh_profile = 1`（[第 3 节](/developers/chartset/mbtiles/)）。
+- 每个 source-layer 是一个大写 S-57 物标类缩写（可选的 `dh_coverage` 除外），属性用 S-57 属性缩写，值按 S-57 属性类型编码，深度用米（[第 4 节](/developers/chartset/tiles/)）。
+- 面状物标要有可见边线时，另写一条带 `dh_boundary = 1` 的线，放在同一 source-layer（[4.3](/developers/chartset/tiles/#4.3)）。
+- 最小样例与参考生成脚本见下表；自检方法见[第 6 节](/developers/chartset/self-check/)。
 
 ## 下载
 
 | 文件 | 内容 |
 | --- | --- |
-| [`minimal-chartset.zip`](/developers/chartset/downloads/minimal-chartset.zip) | 最小样例海图集：包装目录 `minimal-chartset/` 内的 `manifest.json` 与 `chart.mbtiles`（[6.1](/developers/chartset/self-check/#6.1)）。 |
-| [`generate-chartset-sample.py`](/developers/chartset/downloads/generate-chartset-sample.py) | 生成上述样例的参考脚本，只用 Python 标准库；输出是确定的，重跑得到相同的 `manifest.json` 与解码后的瓦片内容（[6.1](/developers/chartset/self-check/#6.1)）。 |
+| [`minimal-chartset.zip`](/developers/chartset/downloads/minimal-chartset.zip) | 最小样例海图集（[6.1](/developers/chartset/self-check/#6.1)）。 |
+| [`generate-chartset-sample.py`](/developers/chartset/downloads/generate-chartset-sample.py) | 生成上述样例的参考脚本，只用 Python 标准库（[6.1](/developers/chartset/self-check/#6.1)）。 |
 
 ## 章节
 
-1. [目录结构](/developers/chartset/structure/)：内容根、包装与内容识别
+1. [目录结构](/developers/chartset/structure/)：内容根、包装、多份矢量库
 2. [manifest.json](/developers/chartset/manifest/)：示例、字段、id 与替换、版本规则
 3. [chart.mbtiles：文件](/developers/chartset/mbtiles/)：metadata、tiles、overview.mbtiles
 4. [chart.mbtiles：瓦片内容](/developers/chartset/tiles/)：坐标系与编码、图层与属性、几何、缩放级别
-5. [数据清单](/developers/chartset/data/)：样式要画的物标类、点选会报告的物标、地表类
-6. [自检](/developers/chartset/self-check/)：最小样例、在 App 里导入、报错对照、导入成功后应看到的结果
-7. [本地导入无 manifest 的矢量 MBTiles](/developers/chartset/vector-mbtiles/)
+5. [数据清单](/developers/chartset/data/)：各物标类的几何与属性、点选报告的物标、地表类
+6. [自检](/developers/chartset/self-check/)：最小样例、导入、拒绝代码、导入后的结果
+
+附录（不属于海图集格式）：
+
+- [附录 7. 无 manifest 的矢量 MBTiles](/developers/chartset/vector-mbtiles/)

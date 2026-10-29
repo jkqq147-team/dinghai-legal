@@ -5,18 +5,19 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
 ## 4.1 坐标系与编码
 
-- 瓦片网格：Web Mercator（EPSG:3857）的标准 `z/x/y` 四叉树，与 MapLibre、OSM 相同。坐标由 WGS84 经纬度投影而来。
-- 编码：Mapbox Vector Tile 2.1（protobuf）；规范要求每张瓦片用 gzip 压缩后写入 `tile_data`。当前 App 也能导入、绘制和点选未 gzip 的 MVT，但不保证将来继续支持这种写法。
-- `extent` 建议 `4096`，四周缓冲建议 `80` 个单位，几何裁到瓦片加缓冲范围；过小的 extent 会使放大后的等深线出现台阶。
+- 瓦片网格：Web Mercator（EPSG:3857）的标准 `z/x/y` 四叉树。坐标由 WGS84 经纬度投影而来。
+- 编码：Mapbox Vector Tile 2.1（protobuf），每张瓦片用 gzip 压缩后写入 `tile_data`。
+- `extent` 建议 `4096`，四周缓冲建议 `80` 个单位，几何裁到瓦片加缓冲范围。
 - 面：外环在瓦片坐标（y 向下）中面积为正（顺时针），内环（洞）为负，遵循 MVT 2.1。
-- 要素 id（MVT feature id）可选。写了的话，**同一 source-layer 中不同物标的 id 应在整个海图集内唯一，至少在相邻瓦片与 overview 间唯一**：App 点选以“source-layer + id”去重，作用域跨相邻瓦片与 overview 的合并查询，而不是每张瓦片独立去重，不要逐瓦片从 1 重新编号。通常保留先到的要素；例外是派生边线先到时，后到的同 layer + id 面会替换它，保留面自身的包含关系、坐标与属性。
-- 只有面和由它派生的可见边线（`dh_boundary = 1`，4.3）可以共用一个 id。**拆开后的每个水深点（`SOUNDG`）必须各用不同的 id，或者都不写 feature id**：同一 source-layer 里 id 相同的点，点选只保留先到的一个，其余点和它们的水深会被丢掉。不写 id 时，App 按 source-layer、坐标和属性区分要素，坐标不同的水深点各自保留。带 manifest 的海图集原样使用这些 id，不像第 7 节的裸库那样在安装前清除。
+- 要素 id（MVT feature id）可选。写了的话，**同一 source-layer 里不同物标的 id 应当在整个海图集内唯一，至少在相邻瓦片与 overview 之间唯一**，不要逐瓦片从 1 重新编号：同一 source-layer 里 id 相同的要素，一次点选只报告一个。
+  - 面和由它派生的边线（`dh_boundary = 1`，[4.3](/developers/chartset/tiles/#4.3)）可以共用一个 id。
+  - 拆开的水深点（`SOUNDG`）不得共用 id：各用不同的 id，或都不写 feature id。
 
 ## 4.2 图层与属性
 
-- **source-layer 名必须是大写的 S-57 物标类缩写**，与 IHO S-57 物标目录完全一致（例如 `DEPARE`、`LIGHTS`）；唯一的命名例外是可选的 `dh_coverage`（下一条）。违反大写要求的小写层名不画，但点选资格查询不区分大小写，仍可能被准入；详情解释按大小写严格匹配目录，匹配失败时走通用详情（例如 `wrecks`），而不是正常的 S-57 详情。目录外自造的层名不画，也不报告。
-- **覆盖边界线 `dh_coverage`**（可选）：数据覆盖范围的外边界，闭合的 LineString/MultiLineString，不带属性。App 用灰色虚线画它，点选不报告。只画整个海图集的外边界，内部各来源之间的接缝不要写；不写就不画边界线。
-- **属性名 = S-57 属性缩写**，大写。属性值按 S-57 属性类型编码：
+- **source-layer 名必须是大写的 S-57 物标类缩写**，与 IHO S-57 物标目录完全一致（例如 `DEPARE`、`LIGHTS`）；唯一的例外是可选的 `dh_coverage`（下一条）。目录外的层名不画，也不报告。
+- **覆盖边界线 `dh_coverage`**（可选）：整个海图集数据覆盖范围的外边界，闭合的 LineString/MultiLineString，不带属性；内部各来源之间的接缝不写。
+- **属性名 = S-57 属性缩写**，大写；定海派生字段除外（见下文）。属性值按 S-57 属性类型编码：
 
   | S-57 类型 | 瓦片中的值 | 例 |
   | --- | --- | --- |
@@ -27,32 +28,28 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
   “值未知”的属性不要写（不要写空串或 0）。
 - **深度一律米**：`DRVAL1`、`DRVAL2`、`VALDCO`、`VALSOU`、`DEPTH` 都是米制，正值向下，负值是干出高度。
-- **定海派生字段通常用 `dh_` 前缀**；例外是 `SOUNDG` 的 `DEPTH`，它是无前缀的定海派生水深字段（[5.1](/developers/chartset/data/#5.1) A 组）：
+- **定海派生字段**用 `dh_` 前缀；例外是 `SOUNDG` 的 `DEPTH`（[5.1](/developers/chartset/data/#5.1) A 组）。
 
-  | 字段 | 值 | App 是否读取 |
+  | 字段 | 值 | 含义 |
   | --- | --- | --- |
-  | `dh_boundary` | 整数 `1` | 读：只出现在面状物标的可见边线上（见 [4.3](/developers/chartset/tiles/#4.3)）。规范要求整数 `1`；当前 App 也能消费数值 `1.0`，但不保证将来继续支持，字符串 `"1"` 不满足绘制边线的数值条件。 |
-  | `dh_drval1` | 浮点，米 | 读，可选：只在点状 `UWTROC`、`WRECKS`、`OBSTRN` 上，为同一单元里包含或接触该点的 `DEPARE`、`DRGARE` 中最大的 `DRVAL1`，没有 `DRVAL1` 的水深区按 −1 计（S-52 DEPARE01 的缺省值，见 [5.1](/developers/chartset/data/#5.1) A 组）；没有这样的水深区就不写。危险物判定孤立危险时用它（见 [5.1](/developers/chartset/data/#5.1) F 组）；不写时按“不能排除位于安全水域”处理。 |
-  | `dh_prev_valdco` | 浮点，米 | 读，可选：只在带 `VALDCO` 的 `DEPCNT` 上，先取同一单元里比它浅的 `DEPCNT` 中最大的 `VALDCO`，再写 `max(更浅值, 0)`；没有更浅的也写 `0`。选安全等深线时用它（见 [5.1](/developers/chartset/data/#5.1) A 组）；不写时这条等深线不会画成安全等深线。 |
-  | `dh_surface_cell` | 字符串，可选 | 读：非空时在详情中显示为“来源单元”；外部海图集提供时也会显示，不写则不编造来源。 |
-  | `dh_surface_cscl` | 整数，可选 | 读：与非空的 `dh_surface_cell` 一起提供时，在详情中显示为“编辑比例尺”，值显示为 `1:<分母>`；同时用于比例尺旁的超比例倍数：准星处包含它的面中取最小分母，地图显示比例（1 点按 0.28 毫米计）大于它时显示“×1.4”这样的倍数。不写则不显示倍数。 |
-
-  按规范命名的 S-57 物标，除 `DEPTH` 的水深读数与上述两个来源字段外，`dh_*` 和其他 S-57 目录以外的键不出现在点选详情里。
+  | `dh_boundary` | 整数 `1` | 这条线是同层面状物标的可见边线（[4.3](/developers/chartset/tiles/#4.3)）。 |
+  | `dh_drval1` | 浮点，米，可选 | 只在点状 `UWTROC`、`WRECKS`、`OBSTRN` 上：同一单元里包含或接触该点的 `DEPARE`、`DRGARE` 中最大的 `DRVAL1`，没有 `DRVAL1` 的水深区按 −1 计；没有这样的水深区就不写。 |
+  | `dh_prev_valdco` | 浮点，米，可选 | 只在带 `VALDCO` 的 `DEPCNT` 上：同一单元里比它浅的 `DEPCNT` 中最大的 `VALDCO`，写 `max(更浅值, 0)`；没有更浅的写 `0`。 |
+  | `dh_surface_cell` | 字符串，可选 | 数据的来源单元名。 |
+  | `dh_surface_cscl` | 整数，可选 | 来源单元的编辑比例尺分母；与非空的 `dh_surface_cell` 一起提供时使用。 |
 
 ## 4.3 几何
 
-| 几何 | MVT 类型 | 怎么画 |
+| 几何 | MVT 类型 | 用于 |
 | --- | --- | --- |
-| 点 | Point | 点符号、航标、水深数字、名称。**航标类规范要求单点 Point**；当前 App 也能消费 MultiPoint 并画出多个符号，但不保证将来继续支持（[5.1](/developers/chartset/data/#5.1) D 组）。 |
-| 线物标 | LineString / MultiLineString，**不带** `dh_boundary` | 等深线、海岸线、电缆、航线等。 |
-| 面 | Polygon / MultiPolygon | 只填色，**不描边**。 |
-| 面的可见边线 | LineString，带 `dh_boundary = 1` 和该物标的全部属性，放在**同一个** source-layer | 面状物标的边线只画这条线。 |
+| 点 | Point | 点物标、水深点。航标类规范要求单点 Point（[5.1](/developers/chartset/data/#5.1) D 组）。 |
+| 线 | LineString / MultiLineString，**不带** `dh_boundary` | 线物标：等深线、岸线、电缆、航线等。 |
+| 面 | Polygon / MultiPolygon | 面物标。面本身没有可见边线。 |
+| 边线 | LineString，带 `dh_boundary = 1` 和该物标的全部属性，放在**同一个** source-layer | 面状物标的可见边线。 |
 
-面的边线单独写，是为了让单元接缝、被遮罩的边、只沿数据界限的边都不画出来：生产方只写真正应该看见的那几段。不写边线，那一类面就只有填色（大多数限制区、航道类面在样式里只有边线、没有填色，不写边线就完全看不见）。
+边线单独写，是为了让单元接缝、被遮罩的边、只沿数据界限的边都不出现：生产方只写真正应该看见的那几段。不写边线，那个面就没有可见边界。
 
 ## 4.4 缩放级别与用途带
 
-- 地图缩放 `z` 画的是 `min(⌊z⌋, maxzoom)` 级的瓦片；点选读的是当前缩放级别夹到 `minzoom`–`maxzoom` 之后的那一级。所以**一个物标在它出现的每个缩放级别都要带齐[第 5 节](/developers/chartset/data/)要求的属性**，只放在最深一级不够。
-- 样式中每个图层有起始缩放（[第 5.1 节](/developers/chartset/data/#5.1)），起始缩放以下的瓦片可以不带该类，地图照样正确；但点选不看样式的起始缩放，低于起始缩放的级别不写某类物标，在那些级别点选就读不到它。建议在 `minzoom`–`maxzoom` 之间凡有数据处都写。
-- 用途带（S-57 INTU，1 概览 … 6 靠泊）不是外部剖面字段，App 不从外部瓦片读它。生产方自行决定每个缩放级别用哪个比例尺的数据，原则是**同一级别、同一位置只放一套数据**：两套重叠时地图两套都画、点选可能报告两套（同 layer + id 仍按 4.1 去重；有概览瓦片集时，`chart.mbtiles` 与放大后的 `overview.mbtiles` 合起来算，3.3）。
-- 外部 profile-v1 使用 `DEPCNT` + `dh_prev_valdco` 选安全等深线（[5.1](/developers/chartset/data/#5.1) A 组）。
+- 每一级显示和点选读的都是这一级（深于 `maxzoom` 时是最深一级）的瓦片，有概览瓦片集时另加 [3.3](/developers/chartset/mbtiles/#3.3) 的概览。所以**一个物标在它出现的每个缩放级别都要带齐[第 5 节](/developers/chartset/data/)要求的属性**，只放在最深一级不够。建议在 `minzoom`–`maxzoom` 之间凡有数据处都写；某一级不写某个物标，在那一级就点选不到它。
+- 用途带（S-57 INTU，1 概览 … 6 靠泊）不是瓦片字段。生产方自行决定每个缩放级别用哪个比例尺的数据，原则是**同一级别、同一位置只放一套数据**：两套重叠时两套都会显示，点选也可能报告两套。有概览瓦片集时，`chart.mbtiles` 与放大后的 `overview.mbtiles` 合起来算（[3.3](/developers/chartset/mbtiles/#3.3)）。
