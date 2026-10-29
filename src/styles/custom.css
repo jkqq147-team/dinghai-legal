@@ -1,0 +1,118 @@
+/*
+ * DingHai — Starlight theme
+ * The palette of the former hand-written site: solid surfaces, hairline
+ * borders, one teal accent. No gradients, no glass, no decorative shadow.
+ * Dark follows the system unless the reader picks a theme.
+ */
+
+:root {
+	--sl-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'PingFang SC',
+		'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+	/* Section headings one step below the default: policy and manual sections are many and short. */
+	--sl-text-h2: var(--sl-text-2xl);
+	--sl-text-h3: var(--sl-text-xl);
+	--sl-shadow-sm: none;
+	--sl-shadow-md: none;
+	--sl-shadow-lg: none;
+
+	/* Dark */
+	--sl-color-accent-low: #12262c;
+	--sl-color-accent: #4fb3c0;
+	--sl-color-accent-high: #7fd0da;
+	--sl-color-white: #e4edef;
+	--sl-color-gray-1: #e4edef;
+	--sl-color-gray-2: #c5d3d7;
+	--sl-color-gray-3: #9db0b6;
+	--sl-color-gray-4: #6b8087;
+	--sl-color-gray-5: #24353b;
+	--sl-color-gray-6: #111e23;
+	--sl-color-black: #0e181c;
+	--sl-color-text-invert: #0b2b32;
+	--sl-color-hairline-light: #24353b;
+	--sl-color-hairline: #24353b;
+	--sl-color-hairline-shade: #3a4f56;
+	--sl-color-bg-nav: #0e181c;
+	--sl-color-bg-sidebar: #0e181c;
+	--sl-color-bg-inline-code: #142228;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #eef4f5;
+	--sl-color-accent: #0b5563;
+	--sl-color-accent-high: #084350;
+	--sl-color-white: #14272e;
+	--sl-color-gray-1: #14272e;
+	--sl-color-gray-2: #2c3f46;
+	--sl-color-gray-3: #55666d;
+	--sl-color-gray-4: #8a999e;
+	--sl-color-gray-5: #c3d0d3;
+	--sl-color-gray-6: #eef4f5;
+	--sl-color-gray-7: #f6f8f9;
+	--sl-color-black: #ffffff;
+	--sl-color-text-invert: #ffffff;
+	--sl-color-hairline-light: #dfe7e9;
+	--sl-color-hairline: #dfe7e9;
+	--sl-color-hairline-shade: #c3d0d3;
+	--sl-color-bg-nav: #ffffff;
+	--sl-color-bg-sidebar: #ffffff;
+	--sl-color-bg-inline-code: #f6f8f9;
+}
+
+/* Logo: the App icon at the size of the site title. */
+.site-title img {
+	border-radius: 22%;
+}
+
+/* Body text: links underlined, as on the former site. */
+.sl-markdown-content a:not(:where(.not-content *)) {
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.18em;
+}
+
+/*
+ * Reference tables in the manual: a token in inline code (`formatVersion`,
+ * `dinghai-chartset`, `<值>`) never breaks inside itself; the code still
+ * wraps at its spaces and Chinese messages between characters. The manual's
+ * rehype plugin wraps each token in `.nobr`. A token wider than its cell
+ * makes the table scroll sideways (Starlight's tables are scroll boxes).
+ */
+.sl-markdown-content td code .nobr {
+	white-space: nowrap;
+}
+
+.sl-markdown-content td:first-child {
+	min-width: 10rem;
+}
+
+/* The effective date under a policy title. */
+.sl-markdown-content .meta {
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+}
+
+/* Home: a plain link list per audience, entries separated by hairlines. */
+.sl-markdown-content .entry-list {
+	padding: 0;
+	list-style: none;
+}
+
+.sl-markdown-content .entry-list li + li {
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--sl-color-hairline);
+}
+
+.sl-markdown-content .entry-list a {
+	font-weight: 600;
+}
+
+.sl-markdown-content .entry-list p {
+	margin-top: 0.25rem;
+	color: var(--sl-color-gray-3);
+}
+
+@media print {
+	:root {
+		color-scheme: light;
+	}
+}
