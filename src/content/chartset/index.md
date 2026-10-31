@@ -7,7 +7,7 @@ description: 定海海图集的数据契约：文件结构、字段含义、App 
 
 用语：
 
-- App 拒绝导入的条件和代码见 [6.3](/developers/chartset/self-check/#6.3)：目录与 ZIP 的结构、manifest、文件是否齐全、MBTiles 的 `dh_profile`。除此之外，App 导入时不检查本手册的其他要求（瓦片内容、`bounds` 是否包住数据、id 等），导入成功不等于全部瓦片都能正确显示和点选。
+- App 拒绝导入的条件和代码见 [6.3](/developers/chartset/self-check/#6.3)：目录与 ZIP 的结构、manifest（含 `id` 非空、不以 `s57:` 开头）、文件是否齐全、MBTiles 的 `dh_profile`。除此之外，App 导入时不检查本手册的其他要求（瓦片内容、`bounds` 是否包住数据、同一产品沿用同一 `id` 等），导入成功不等于全部瓦片都能正确显示和点选。
 
 ## 0. 速览
 
