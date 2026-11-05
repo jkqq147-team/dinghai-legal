@@ -17,7 +17,7 @@ Starlight (Astro) site, published to GitHub Pages by `.github/workflows/pages.ym
 ## Legal pages are word for word
 
 - `src/content/docs/{,en/}{privacy,support}.md` are legal and public wording. A layout change must not change one visible character: diff the visible text of every page before and after (extract plain text from both, compare block by block) and expect zero differences.
-- A wording change is a policy change: every sentence must match what the current App and servers actually do, shown by current on-device evidence; code reading, the simulator, or a passing build is not evidence (user decision after #274).
+- A wording change is a policy change: every sentence must match what the current App and servers actually do; claims about on-device layout or link visibility require on-device verification.
 
 ## No third-party resources
 
