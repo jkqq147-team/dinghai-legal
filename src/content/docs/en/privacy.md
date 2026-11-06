@@ -5,7 +5,7 @@ description: DingHai Privacy Policy covering location data, anchor-watch records
 
 DingHai does not use advertising or third-party analytics services. You may choose to use a DingHai account with Sign in with Apple; local anchor watch requires no account and does not depend on DingHai servers.
 
-<p class="meta">Effective date: November 6, 2026</p>
+<p class="meta">Effective date: November 7, 2026</p>
 
 ## 1. Scope
 
@@ -64,7 +64,7 @@ Anchor-watch data is not used for advertising, profiling, or cross-app tracking.
 
 ## 5. Apple and infrastructure services
 
-Apple map styles use MapKit; the DingHai Basemap (global overview and downloaded sea areas), vector charts, and raster charts downloaded to the device are read and rendered on the device by MapLibre. When you select sea areas, download the DingHai Basemap, or check for its updates, DingHai fetches the DingHai Basemap manifest and required indexes from resources.dinghai.app, and fetches the corresponding overview or regional resource files when downloading.
+Apple map styles use MapKit; the DingHai Basemap (global overview and downloaded sea areas), satellite imagery (its global overview and the imagery of downloaded sea areas), vector charts, and raster charts downloaded to the device are read and rendered on the device by MapLibre. When you select sea areas, download the DingHai Basemap or satellite imagery, or check for DingHai Basemap updates, DingHai fetches the corresponding manifest and required indexes from resources.dinghai.app, and fetches the corresponding overview or regional resource files when downloading.
 
 When you download NOAA charts, DingHai connects directly to charts.noaa.gov or [www.charts.noaa.gov](https://www.charts.noaa.gov). When you download the recommended Slackwater tidal data or check for a new version, DingHai fetches tidal data release information (tides/manifest.json) from resources.dinghai.app and downloads tidal data files from the same domain. When you choose "Download from URL" for charts or tidal data, DingHai connects to the URL you enter and its redirect destinations; checking or updating downloaded data also accesses the corresponding sources. Services receiving these requests can see network information such as your connection's public IP address, the resources requested, and request times; the selected sea area may be inferred from the resource requests. These download requests do not include DingHai account session tokens or anchor-watch records.
 
