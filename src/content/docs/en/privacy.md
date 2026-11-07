@@ -106,6 +106,10 @@ DingHai processes the data described above only to provide local anchor watch, t
 
 This website uses no cookies, analytics, tracking pixels, or third-party fonts.
 
+### Diagnostic Reports
+
+To investigate crashes, hangs, and overheating, DingHai automatically sends system-generated diagnostic reports (crash causes, where hangs occur, power usage and performance statistics, and the system version and device model) to DingHai's servers, along with the app version number. Reports contain no account information, boat positions, or device identifiers, are not linked to your identity, and are not used for tracking. The server retains reports for 90 days; expired reports are deleted the next time a new report is received. Reports that have not been sent remain on this device for now and are sent again next time.
+
 ## 9. Intended use
 
 DingHai is an anchor-watch aid. It does not provide emergency rescue or vessel control and cannot replace
