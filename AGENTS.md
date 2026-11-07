@@ -11,7 +11,7 @@ Starlight (Astro) site, published to GitHub Pages by `.github/workflows/pages.ym
 ## URLs do not change
 
 - Chinese is the root locale, English lives under `/en/`. These must keep working at the same paths: `/`, `/privacy/`, `/support/`, `/en/`, `/en/privacy/`, `/en/support/`. The App links to `https://dinghai.app/privacy/`.
-- The chart set manual is Chinese only, under `/developers/chartset/` (`src/content/chartset/`). Its section anchors are the section numbers (`#1.1`, `#6.3`), set by `src/plugins/rehype-section-ids.mjs`; the App and the manual cite them. The App's V3 import error links to `/developers/chartset/structure/`. Never rename a page slug or renumber a section.
+- The chart set manual is Chinese only, under `/developers/chartset/` (`src/content/chartset/`). Its section anchors are the section numbers (`#1.1`, `#6.3`), set by `src/plugins/rehype-section-ids.mjs`; the App and the manual cite them. Import failures show a plain-language reason in the offline chart job row, without an error code or format-guide link; V3 and other diagnostics are recorded in device logs. Never rename a page slug or renumber a section.
 - `public/CNAME` stays `dinghai.app`.
 
 ## Legal pages are word for word

@@ -1,6 +1,6 @@
 ---
 title: 6. 自检
-description: 在真机定海 App 里导入海图集自检；导入被拒绝时按代码查原因和改法，导入成功后核对能看到的结果。
+description: 在真机定海 App 里导入海图集自检；导入被拒绝时按设备日志中的代码查原因和改法，导入成功后核对能看到的结果。
 ---
 
 自检就是在 iPhone 或 iPad 上用定海 App 导入你生成的海图集，走与用户相同的导入路径。检查结果以你所用的 App 版本为准。
@@ -23,7 +23,7 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 1. 把海图集文件夹或 ZIP 放到“文件” App 能访问的位置，例如 iCloud 云盘或“我的 iPhone”。测试 ZIP 时直接导入 ZIP，不以解压目录替代。
 2. 在定海里打开“设置” › “离线海图”，点右上角的 +，选“从文件导入…”，再选择海图集文件夹或 ZIP。也可以在“文件” App 里用“共享”或“打开方式”把 ZIP 交给定海，或用隔空投送发给设备，在定海弹出的确认页点“导入”。
-3. 导入成功后，海图集出现在“离线海图”列表里，名称取 manifest 的 `name`。被拒绝时，App 弹窗给出原因，按 [6.3](#6.3) 对照。
+3. 导入成功后，海图集出现在“离线海图”列表里，名称取 manifest 的 `name`。被拒绝时，App 不弹窗，只在“离线海图”的任务行写一句原因，不显示错误码或“格式说明”链接；需要定位制作问题时，按 [6.3](#6.3) 查看设备日志。
 
 同一 `id` 再导入会替换旧的那份（[2.3](/developers/chartset/manifest/#2.3)），可以反复改、反复导。
 
@@ -31,7 +31,9 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 不保证多个错误的报告次序。
 
-**manifest 与 MBTiles 校验失败**：提示末尾的方括号里是英文诊断，不随界面语言变化。
+错误码和英文诊断写入设备日志，不在任务行显示。用数据线将 iPhone 或 iPad 连接到 Mac，按设备提示允许连接并信任电脑；打开 Mac 的“控制台”App，在边栏选择设备，开始查看实时日志，再在定海中重现导入失败。搜索 `Chart import failed` 或 `Offline chart job failed`，按日志方括号里的诊断或代码对照下表。
+
+**manifest 与 MBTiles 校验失败**：日志方括号里是英文诊断，不随界面语言变化。例如缺少 `chart.mbtiles` 时，安装失败日志为 `Chart import failed [chart.mbtiles missing]: <private>`；冒号后的错误详情标记为私有，方括号里的诊断公开记录。任务行只显示“这份定海海图集无法使用，请向提供方获取新文件。”。
 
 | 代码 | 原因 | 怎么改 |
 | --- | --- | --- |
@@ -58,7 +60,7 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 | `<文件> metadata has no integer dh_profile` | metadata 没有 `dh_profile`，或它的值不是整数。 | 写 `dh_profile = 1`（[3.1](/developers/chartset/mbtiles/#3.1)）。 |
 | `<文件> dh_profile <a> differs from manifest tileProfile <b>` | 两处版本不一致。 | 改成相同的值。 |
 
-**其他代码**：提示末尾的“（代码 …）”。
+**其他代码**：查看日志方括号里的代码，例如 `Offline chart job failed [V3]:`；冒号后是错误详情。任务行不再显示“（代码 …）”。
 
 | 代码 | 原因 | 怎么改 |
 | --- | --- | --- |

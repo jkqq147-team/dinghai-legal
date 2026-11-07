@@ -1,6 +1,6 @@
 ---
 title: 1. 目录结构
-description: 定海海图集的内容根与包装目录；多份矢量库没有 manifest 时为什么报 V3，怎样重新打包。
+description: 定海海图集的内容根与包装目录；多份矢量库没有 manifest 时为什么被拒绝、设备日志中的 V3 是什么，怎样重新打包。
 ---
 
 ```
@@ -37,7 +37,7 @@ description: 定海海图集的内容根与包装目录；多份矢量库没有 
 
 一个定海海图集只有一个 `chart.mbtiles`，由 `manifest.json` 声明；可选的 `overview.mbtiles` 由 manifest 的 `overviewZoom` 声明。不同区域、不同比例尺的数据要先合成到这一个瓦片集里。
 
-**V3 是什么情况**：所选文件夹或 ZIP 的根和下面一层都没有 `manifest.json`，也不是 S-57 交换集，App 在其中找到两份或更多矢量 MBTiles。App 不猜它们怎样组合：不按文件名把某一份当作 `chart.mbtiles` 或 `overview.mbtiles`，不拼合，也不只挑一份导入，所以拒绝导入（代码 V3）。只有 `chart.mbtiles` 和 `overview.mbtiles` 两个文件、没有 `manifest.json` 时，同样是 V3。
+**V3 是什么情况**：所选文件夹或 ZIP 的根和下面一层都没有 `manifest.json`，也不是 S-57 交换集，App 在其中找到两份或更多矢量 MBTiles。App 不猜它们怎样组合：不按文件名把某一份当作 `chart.mbtiles` 或 `overview.mbtiles`，不拼合，也不只挑一份导入，所以拒绝导入。只有 `chart.mbtiles` 和 `overview.mbtiles` 两个文件、没有 `manifest.json` 时，同样会被拒绝；任务行显示“这里有 2 份海图，无法一起导入。请一次只导入一份。”，不显示 V3 或“格式说明”链接。V3 只记在设备日志里，日志以 `Offline chart job failed [V3]:` 开头；查看方法见 [6.3](/developers/chartset/self-check/#6.3)。
 
 **怎样重新打包**：
 
@@ -45,4 +45,4 @@ description: 定海海图集的内容根与包装目录；多份矢量库没有 
 - 确实是几份独立的海图时，分别打包成几个海图集，各有自己的 `manifest.json` 和 `id`，分别导入。
 - 只要其中一份时，把它单独放进文件夹或 ZIP 再导入（[附录 7](/developers/chartset/vector-mbtiles/)）。
 
-有 `manifest.json` 的海图集不会报 V3。没有 manifest 时的其他拒绝代码见 [6.3](/developers/chartset/self-check/#6.3)。
+有 `manifest.json` 的海图集不会报 V3。没有 manifest 时的其他拒绝代码也在设备日志里，见 [6.3](/developers/chartset/self-check/#6.3)。

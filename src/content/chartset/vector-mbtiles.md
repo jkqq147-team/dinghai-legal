@@ -1,6 +1,6 @@
 ---
 title: 附录 7. 无 manifest 的矢量 MBTiles
-description: 附录，不属于海图集格式：没有 manifest 的单份矢量 MBTiles 怎样被识别、校验和规范化，以及 V1–V3。
+description: 附录，不属于海图集格式：没有 manifest 的单份矢量 MBTiles 怎样被识别、校验和规范化，以及设备日志中的 V1–V3。
 ---
 
 **本附录不属于海图集格式。** 定海海图集按第 1–6 节打包；本附录只说明 App 还接受的另一种本地输入：文件夹或 ZIP 里只有一份矢量 MBTiles、没有 `manifest.json`。App 先校验并规范化成海图集，再安装。有多份矢量库时见 [1.2](/developers/chartset/structure/#1.2)。
@@ -20,21 +20,23 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 | 深度单位 | `dh_profile=1` 按米制。公开剖面以 `M_UNIT` 面中 `DUNITS=1` 的范围确认米制，须覆盖相应深度几何；非米制范围与深度几何重叠，或 `M_UNIT` 的单位或范围读不出，都拒绝。 |
 | 可见面的边线 | 不校验。公开剖面的限制区、航道等面，由 App 从面环生成同层 `dh_boundary=1` 的边线，替换输入里的边线；`dh_profile=1` 的边线原样保留。 |
 
-缺少物标种类（浮标、陆地、灯标、测深点或限制区）不拒绝。可选信息缺失或读不出（例如 `dh_prev_valdco`、`dh_drval1`、来源单元）不拒绝，在导入确认页列出。
+缺少物标种类（浮标、陆地、灯标、测深点或限制区）不拒绝。可选信息缺失或读不出（例如 `dh_prev_valdco`、`dh_drval1`、来源单元）不拒绝；导入确认页在“这份海图的限制”中说明对使用的影响，不列字段名，例如“部分等深线不能显示为安全等深线。”、“部分危险物周围的水深不明。”、“部分物标查不到所属图幅。”。
 
 依据：[MBTiles 1.3](https://github.com/mapbox/mbtiles-spec/blob/master/1.3/spec.md)、[MVT 2.1](https://github.com/mapbox/vector-tile-spec/tree/master/2.1)、S-57 3.1 物标／属性目录，以及 [GDAL S-57 driver](https://gdal.org/en/stable/drivers/vector/s57.html) 的类名分层、拆点与 DEPTH、列表表达。
 
 ## 7.2 一次单向规范化
 
 - 安装前只转换一次，不修改原文件。输出是一个海图集：`manifest.json`（`external`、`tileProfile 1`）、`chart.mbtiles`（`dh_profile=1`、gzip MVT、TMS）和 `vector-import.json`（识别结果与缺少的可选信息）。
-- 规范化通过后显示“导入矢量瓦片”确认页；点“取消”不安装。
+- 规范化通过后显示“导入海图”确认页；点“取消”不安装。
 - 输出的缩放与范围来自实际数据；`id` 取输入内容的指纹，同样的内容再导入替换前一次导入（[2.3](/developers/chartset/manifest/#2.3)）；`createdAt` 是本次生成时间，不是测绘日期。
 - 识别通过不是海图真实、完整、最新或航行安全的认证。
 
 ## 7.3 按处理办法分错误码
 
+以下代码只写入设备日志，不在任务行显示；查看方法见 [6.3](/developers/chartset/self-check/#6.3)。
+
 | 代码 | 情况 | 怎么改 |
 | --- | --- | --- |
-| V1 | 格式不受支持、实际图层无法识别，或四项必要信息不足（[7.1](#7.1)）；原因写明没通过的那一项。 | 向提供方索取 S-57 交换集或定海海图集。补一个 manifest 不能补上缺项：有 manifest 的包按海图集导入，App 只做 [6.3](/developers/chartset/self-check/#6.3) 的校验，不报 V1，缺水深数值的数据也会照样装入；补齐四项仍是制作方的责任。 |
+| V1 | 格式不受支持、实际图层无法识别，或四项必要信息不足（[7.1](#7.1)）。任务行显示“无法导入这份海图。请向提供方索取 S-57 海图或定海海图集。”；没通过的具体检查写在设备日志的错误详情里。 | 向提供方索取 S-57 交换集或定海海图集。补一个 manifest 不能补上缺项：有 manifest 的包按海图集导入，App 只做 [6.3](/developers/chartset/self-check/#6.3) 的校验，不报 V1，缺水深数值的数据也会照样装入；补齐四项仍是制作方的责任。 |
 | V2 | SQLite 数据库、表、metadata 或瓦片内容无法读取，例如 MVT 无法解码。 | 确认文件完整，或请提供方重新导出。 |
 | V3 | 没有 manifest，却有两份或更多矢量 MBTiles。 | 见 [1.2](/developers/chartset/structure/#1.2)。 |
