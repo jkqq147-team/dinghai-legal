@@ -20,7 +20,7 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 | 深度单位 | `dh_profile=1` 按米制。公开剖面以 `M_UNIT` 面中 `DUNITS=1` 的范围确认米制，须覆盖相应深度几何；非米制范围与深度几何重叠，或 `M_UNIT` 的单位或范围读不出，都拒绝。 |
 | 可见面的边线 | 不校验。公开剖面的限制区、航道等面，由 App 从面环生成同层 `dh_boundary=1` 的边线，替换输入里的边线；`dh_profile=1` 的边线原样保留。 |
 
-缺少物标种类（浮标、陆地、灯标、测深点或限制区）不拒绝。可选信息缺失或读不出（例如 `dh_prev_valdco`、`dh_drval1`、来源单元）不拒绝；导入确认页在“这份海图的限制”中说明对使用的影响，不列字段名，例如“部分等深线不能显示为安全等深线。”、“部分危险物周围的水深不明。”、“部分物标查不到所属图幅。”。
+缺少物标种类（浮标、陆地、灯标、测深点或限制区）不拒绝。可选信息缺失或读不出（例如 `dh_prev_valdco`、`dh_drval1`、来源单元）不拒绝；导入确认页在“这份海图的限制”中说明对使用的影响，不列字段名，例如“部分等深线不能显示为安全等深线。”、“部分危险物周围的水深不明。”、“部分物标查不到所属图幅。”。缺少 `dh_has_body` 不拒绝，也不在导入确认页提示。
 
 依据：[MBTiles 1.3](https://github.com/mapbox/mbtiles-spec/blob/master/1.3/spec.md)、[MVT 2.1](https://github.com/mapbox/vector-tile-spec/tree/master/2.1)、S-57 3.1 物标／属性目录，以及 [GDAL S-57 driver](https://gdal.org/en/stable/drivers/vector/s57.html) 的类名分层、拆点与 DEPTH、列表表达。
 

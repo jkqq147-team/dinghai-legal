@@ -62,10 +62,11 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | --- | --- | --- | --- |
 | `BOYLAT` `BCNLAT` `BOYCAR` `BCNCAR` `BOYISD` `BCNISD` `BOYSAW` `BCNSAW` `BOYSPP` `BCNSPP` `LITFLT` `LITVES` | 单点 Point | — | `BOYSHP`、`BCNSHP`（形状）；`CATLAM`、`CATCAM`（类别）；`COLOUR`、`COLPAT`（颜色）；`MARSYS`（浮标制度）；名称（标注） |
 | `TOPMAR` | 单点 Point | — | `TOPSHP`（形状）；`COLOUR`（颜色） |
-| `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质） |
+| `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质）；`dh_has_body`（灯光位置） |
 
 - 真实颜色已知时写 `COLOUR`。
 - 顶标、灯与浮标本体同位置时，分别写在各自的图层（`TOPMAR`、`LIGHTS`），与 S-57 一致。
+- 灯与本体同位置（条件见 [4.2](/developers/chartset/tiles/#4.2)）时，App 转换 S-57 会在 `LIGHTS` 点上写入 `dh_has_body = 1`，外部生产方可选择写入以将灯光画在本体灯头处，也可不写；缺少该字段时，灯画成以自身位置为中心的灯色圆点。
 
 **E. 航路、限制区、管线**
 
