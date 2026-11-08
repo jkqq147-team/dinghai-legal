@@ -52,6 +52,38 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
 ## 4.4 缩放级别与用途带
 
-- 每一级显示和点选读的都是这一级（深于 `maxzoom` 时是最深一级）的瓦片，有概览瓦片集时另加 [3.3](/developers/chartset/mbtiles/#3.3) 的概览。所以**一个物标在它出现的每个缩放级别都要带齐[第 5 节](/developers/chartset/data/)要求的属性**，只放在最深一级不够。建议在 `minzoom`–`maxzoom` 之间凡有数据处都写；某一级不写某个物标，在那一级就点选不到它。
+- 每一级显示和点选读的都是这一级（深于 `maxzoom` 时是最深一级）的瓦片，有概览瓦片集时另加 [3.3](/developers/chartset/mbtiles/#3.3) 的概览。所以**一个物标在它出现的每个缩放级别都要带齐[第 5 节](/developers/chartset/data/)要求的属性**，只放在最深一级不够。建议在 `minzoom`–`maxzoom` 之间凡有数据处都写（可以省掉的浅级别见下文）；某一级不写某个物标，在那一级就点选不到它。
+- **写进某一级，不等于在那一级就画出来、能点选。** 导入的海图集（包括按[附录 7](/developers/chartset/vector-mbtiles/)导入的矢量 MBTiles）中，下表各物标类的这些画法有显示级别：从表中级别起完全显示；标有淡入的，从前半级起由透明渐变到原有样式，再浅就不画；没有淡入的，浅于表中级别就不画。不画的时候，准星也不会经由这一画法读到该物标。这些级别是定海自己选定的，S-52 没有规定地图缩放级别。
+
+  | 显示级别 | 淡入 | 物标类 | 画法 |
+  | --- | --- | --- | --- |
+  | 7 | 6.5 起 | `DEPCNT` | 线，安全等深线和干出线（`VALDCO` 为 0）除外 |
+  | 8 | 7.5 起 | `RESARE` `CTNARE` `ACHARE` `MIPARE` `DMPGRD` `SPLARE` `MARCUL` `CBLARE` `PIPARE` `FAIRWY` `PRCARE` `TSSLPT` `DWRTPT` | 边线 |
+  | 8 | 7.5 起 | `TSEZNE` | 面 |
+  | 8 | 7.5 起 | `TSELNE` `TSSBND` `DWRTCL` `RECTRC` `RCRTCL` `NAVLNE` `FERYRT` | 线 |
+  | 8 | 7.5 起 | `OBSTRN` `WRECKS` `UWTROC` | 画成孤立危险物的点（例外见表下） |
+  | 8 | — | `LIGHTS` | 点，画成灯色圆点；11.5–12 淡出，由灯光符号接替 |
+  | 10 | — | `SEAARE` | 带 `CATSEA` 的名称 |
+  | 11 | 10.5 起 | `CBLSUB` `PIPSOL` | 线 |
+  | 11 | — | `SOUNDG` | 点，画成水深数字 |
+  | 11 | — | `LNDRGN` `BUAARE` | 名称 |
+  | 12 | 11.5 起 | `BOYLAT` `BCNLAT` `BOYCAR` `BCNCAR` `BOYISD` `BCNISD` `BOYSAW` `BCNSAW` `BOYSPP` `BCNSPP` `LITFLT` `LITVES` `TOPMAR` `LIGHTS` | 点：航标本体、顶标和灯光符号 |
+  | 12 | 11.5 起 | `OBSTRN` `WRECKS` `UWTROC` | 其余的点 |
+  | 12 | 11.5 起 | `LNDMRK` `SILTNK` `OFSPLF` | 点 |
+  | 12 | — | `OBSTRN` `WRECKS` `UWTROC` | 点旁的水深（`VALSOU`），孤立危险物也是 |
+  | 12 | — | `LIGHTS` | 灯质 |
+  | 12 | — | `SEAARE` | 其余名称 |
+  | 12 | — | `ROADWY` `RAILWY` `LNDELV` | 线 |
+  | 13 | 12.5 起 | `MORFAC` `PYLONS` `WEDKLP` `WATTUR` `HRBFAC` `SMCFAC` `ACHARE` `ACHBRT` `FOGSIG` `CGUSTA` `PRDARE` `NEWOBJ` `SNDWAV` `PILBOP` `DMPGRD` `SISTAW` `SISTAT` | 点 |
+  | 13 | — | `DEPCNT` | 等深线数值 |
+  | 13 | — | `ACHARE` `HRBFAC` `SMCFAC` | 名称 |
+  | 14 | 13.5 起 | `BUISGL` `PILPNT` | 点 |
+  | 15 | 14.5 起 | `SBDARE` | 点（底质） |
+  | 15 | — | `BERTHS`，航标本体（`BOYLAT` … `LITVES` 共 12 类） | 名称 |
+
+  孤立危险物由 App 按用户设置的安全水深判定（S-52 的孤立危险物规则），与 `VALSOU`、`WATLEV`、`CATWRK`、`CATOBS` 和 `dh_drval1`（[4.2](/developers/chartset/tiles/#4.2)）有关。其中没有 `VALSOU`、没有 `dh_drval1`、`WATLEV` 未写或为 3 的，除 `CATWRK` 为 1、2、4、5 的 `WRECKS` 和 `CATOBS` 为 6 的 `OBSTRN` 外，也到 12 级才完全显示（11.5 起淡入）。
+- 表里没有的物标类和画法没有显示级别的限制，例如水深区 `DEPARE`、`DRGARE`（包括浅水图案），`LNDARE` 的面和点（小岛），岸线 `COALNE`，安全等深线和干出线，架空的 `CBLOHD`、`PIPOHD`，以及 `OBSTRN`、`WRECKS`、`UWTROC` 的面、边线和线。
+- 文字（水深数字、名称、灯质、危险物旁的水深、等深线数值）和 `SBDARE` 底质会互相避让，放不下的不画。水深点只画成数字，数字被让掉时，那个水深点在这一级也点选不到。
+- 一类物标的每种画法都在表中时，`chart.mbtiles` 里比其中最早开始画出（有淡入的按开始淡入算）的缩放所在那一级更浅的级别，写进这类物标也不会画出、点选不到，可以不写。例如 `CBLSUB`、`PIPSOL` 10.5 起淡入：第 10 级瓦片里的在 10.5–11 之间淡入显示，第 9 级及更浅的不画。两处例外照常写：最深一级（`maxzoom`）在更深的缩放放大使用，`overview.mbtiles` 在深于 `overviewZoom` 的各级放大使用（[3.3](/developers/chartset/mbtiles/#3.3)）。`DEPCNT` 和 `OBSTRN`、`WRECKS`、`UWTROC` 还有不在表中的画法（安全等深线和干出线；面、边线和线），哪条是安全等深线、哪个点是孤立危险物又随用户设置的安全水深而变，所以浅级别也照常写。写进去的级别，仍按第一条带齐属性。
 - 用途带（S-57 INTU，1 概览 … 6 靠泊）不是瓦片字段。生产方自行决定每个缩放级别用哪个比例尺的数据，原则是**同一级别、同一位置只放一套数据**：两套重叠时两套都会显示，点选也可能报告两套。有概览瓦片集时，`chart.mbtiles` 与放大后的 `overview.mbtiles` 合起来算（[3.3](/developers/chartset/mbtiles/#3.3)）。
 - 某一级、某处既没有水深区面（`DEPARE`、`DRGARE` 的面）也没有陆地面时，下方的定海底图（海面、陆地与岸线）会透出；不要在这一级单独写陆地面（如 GSHHG 概览陆地），以免岸线不重合时出现两层岸线和夹在中间的杂色条。应在这一级写入真实的水深区面，或不写陆地面，整级交给定海底图。

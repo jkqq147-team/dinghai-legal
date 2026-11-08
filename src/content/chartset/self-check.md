@@ -97,13 +97,14 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 1. 在地图上点“地图显示”按钮，在“离线海图”下选中刚导入的海图集。
 2. 在“搜索坐标”里输入 `bounds` 内的一个点（最小样例用 `37.80, -122.62`），把地图移过去。
-3. 放大到海图集显示出来（不浅于 `minimumZoom`），把准星移到要核对的位置，看读数。
+3. 放大到海图集显示出来（不浅于 `minimumZoom`），把准星移到要核对的位置，看读数。有些物标类要放得更深才画、才能读到（[4.4](/developers/chartset/tiles/#4.4)）。
 
 最小样例在“离线海图”的安全水深与深水保持默认的 3 米、10 米时，应该看到：
 
-- 三档水深区依次为浅水蓝、浅青蓝、白色；小岛是陆地色，岸线、等深线是细线；有水深数字、浮标与灯、等深线数值。
+- 三档水深区依次为浅水蓝、浅青蓝、白色；小岛是陆地色，岸线、等深线是细线；这些从样例最浅的 10 级起就有。
+- 11 级起有水深数字；浮标与灯的符号 11.5 起淡入，12 级起完全显示；13 级起有等深线数值。在这之前都不画（[4.4](/developers/chartset/tiles/#4.4)）；浅于 11.5 时，灯只显示为绿色圆点。
 - 锚地只有品红虚线边界，内部不填色（来自 `dh_boundary` 线）。
-- 沉船位于 `37.803144, -122.628527`，低、中、高缩放下准星读数都是“Sample Wreck · 6.5米”。
+- 沉船位于 `37.803144, -122.628527`，12 级起各级准星读数都是“Sample Wreck · 6.5米”。它在 3 米安全水深下不是孤立危险物，符号 11.5 起才淡入，更浅时不画、读不到（[4.4](/developers/chartset/tiles/#4.4)）。
 - 水面 `37.799100, -122.625684` 放大后读数为“0–5米”；小岛内不显示水深。
 - 样例覆盖范围外显示定海底图，不是这份海图集提供的内容。
 
@@ -114,10 +115,10 @@ App 导入时不检查瓦片内容，所以“导入成功，但地图上看不�
 | 整片都没有 | `tile_row` 写成了 XYZ 行号（应为 TMS，[3.2](/developers/chartset/mbtiles/#3.2)）；瓦片不是可解码的 MVT；metadata `minzoom`/`maxzoom` 与 manifest 不一致；当前缩放浅于 `minimumZoom`。 |
 | 放大过 `overviewZoom` 后某片变空白 | `chart.mbtiles` 深级别不写那里的数据，`overview.mbtiles` 也没补上（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
 | 放大过 `overviewZoom` 后两套叠在一起或有细缝 | 概览没有按深级别的覆盖范围裁切，或裁切线又被简化（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
-| 某一类没有 | source-layer 名不是大写 S-57 缩写；几何类型不对，例如航标写成线或面、面的边线没带 `dh_boundary`（[5.1](/developers/chartset/data/#5.1)）。 |
-| 水深区颜色不对 / 没有水深数字 | `DRVAL1`/`DRVAL2`/`DEPTH` 不是数值，或单位不是米；`SOUNDG` 没拆成单点。 |
+| 某一类没有 | 当前缩放浅于 [4.4](/developers/chartset/tiles/#4.4) 表中该类的显示级别；source-layer 名不是大写 S-57 缩写；几何类型不对，例如航标写成线或面、面的边线没带 `dh_boundary`（[5.1](/developers/chartset/data/#5.1)）。 |
+| 水深区颜色不对 / 没有水深数字 | `DRVAL1`/`DRVAL2`/`DEPTH` 不是数值，或单位不是米；`SOUNDG` 没拆成单点；当前缩放浅于 11 级（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 符号是通用形状 | 选符号的属性缺失或值不对（[5.1](/developers/chartset/data/#5.1)），列表属性没有写成逗号串。 |
-| 某些缩放级别点选读不到 | 该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |
+| 某些缩放级别点选读不到 | 浅于 [4.4](/developers/chartset/tiles/#4.4) 所列的显示级别时，该类物标本来就不显示、也点选不到；或该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 边上的物标点选读不到 | manifest `bounds` 没有包住全部数据（[2.2](/developers/chartset/manifest/#2.2)）。 |
 | 详情少了属性 | 属性名不是 S-57 目录里的缩写，或只写在了部分缩放级别（[5.2](/developers/chartset/data/#5.2)）。 |
 
