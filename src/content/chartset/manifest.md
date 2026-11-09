@@ -50,9 +50,9 @@ UTF-8 编码的 JSON 对象。App 不认识的字段一律忽略。
 | `overviewZoom` | 整数，可选（格式 1.1 起） | `overview.mbtiles` 唯一的那一级，`0 ≤ overviewZoom < maximumZoom`。写了就必须有 `overview.mbtiles`；不写就没有概览瓦片集（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
 | `createdAt` | 字符串 | 生成时间，ISO 8601 日期加时间和时区，推荐 UTC，例如 `2026-09-30T12:00:00Z`。 |
 
-这几个字段决定 App 读哪些数据：
+这些字段与地图显示、读数的关系：
 
-- 点选只在准星落在 `bounds` 之内时读这份海图集；`bounds` 画小了，边上的物标和水深点选读不到。
+- `bounds` 声明数据覆盖范围，不是准星点选的直接边界；准星读数以地图上实际绘制的内容为准。
 - 浅于 `minimumZoom` 时不显示这份海图集；深于 `maximumZoom` 时放大最深一级显示和点选，不必为放大另写更深的级别。
 
 ## 2.3 id 与替换

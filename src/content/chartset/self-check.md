@@ -31,9 +31,9 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 不保证多个错误的报告次序。
 
-错误码和英文诊断写入设备日志，不在任务行显示。用数据线将 iPhone 或 iPad 连接到 Mac，按设备提示允许连接并信任电脑；打开 Mac 的“控制台”App，在边栏选择设备，开始查看实时日志，再在定海中重现导入失败。搜索 `Chart import failed` 或 `Offline chart job failed`，按日志方括号里的诊断或代码对照下表。
+错误码和英文诊断写入设备日志，不在任务行显示。用数据线将 iPhone 或 iPad 连接到 Mac，按设备提示允许连接并信任电脑；打开 Mac 的“控制台”App，在边栏选择设备，开始查看实时日志，再在定海中重现导入失败。搜索 `Offline chart job failed`，按日志方括号里的诊断或代码对照下表。
 
-**manifest 与 MBTiles 校验失败**：日志方括号里是英文诊断，不随界面语言变化。例如缺少 `chart.mbtiles` 时，安装失败日志为 `Chart import failed [chart.mbtiles missing]: <private>`；冒号后的错误详情标记为私有，方括号里的诊断公开记录。任务行只显示“这份定海海图集无法使用，请向提供方获取新文件。”。
+**manifest 与 MBTiles 校验失败**：日志方括号里是英文诊断，不随界面语言变化。例如缺少 `chart.mbtiles` 时，安装失败日志为 `Offline chart job failed [chart.mbtiles missing]: …`；方括号里的诊断和冒号后的错误详情均公开记录。任务行只显示“这份定海海图集无法使用，请向提供方获取新文件。”。
 
 | 代码 | 原因 | 怎么改 |
 | --- | --- | --- |
@@ -95,7 +95,7 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 导入后地图不会自动切换到这份海图集，要手动选中：
 
-1. 在地图上点“地图显示”按钮，在“离线海图”下选中刚导入的海图集。
+1. 在地图上点图层图标按钮，打开“地图”面板，选中刚导入的海图集。
 2. 在“搜索坐标”里输入 `bounds` 内的一个点（最小样例用 `37.80, -122.62`），把地图移过去。
 3. 放大到海图集显示出来（不浅于 `minimumZoom`），把准星移到要核对的位置，看读数。有些物标类要放得更深才画、才能读到（[4.4](/developers/chartset/tiles/#4.4)）。
 
@@ -119,7 +119,6 @@ App 导入时不检查瓦片内容，所以“导入成功，但地图上看不�
 | 水深区颜色不对 / 没有水深数字 | `DRVAL1`/`DRVAL2`/`DEPTH` 不是数值，或单位不是米；`SOUNDG` 没拆成单点；当前缩放浅于 11 级（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 符号是通用形状 | 选符号的属性缺失或值不对（[5.1](/developers/chartset/data/#5.1)），列表属性没有写成逗号串。 |
 | 某些缩放级别点选读不到 | 浅于 [4.4](/developers/chartset/tiles/#4.4) 所列的显示级别时，该类物标本来就不显示、也点选不到；或该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |
-| 边上的物标点选读不到 | manifest `bounds` 没有包住全部数据（[2.2](/developers/chartset/manifest/#2.2)）。 |
 | 详情少了属性 | 属性名不是 S-57 目录里的缩写，或只写在了部分缩放级别（[5.2](/developers/chartset/data/#5.2)）。 |
 
 ## 6.5 没有命令行校验器
