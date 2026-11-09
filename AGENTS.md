@@ -2,6 +2,10 @@
 
 Starlight (Astro) site, published to GitHub Pages by `.github/workflows/pages.yml`.
 
+## 目标
+
+- 对外法务文案与海图集接入手册只写当前已上线 App 与服务端能被实测或代码直接证实的事实；代码与手册不一致时以代码为准，无出处或无法证实的断言一律删除。
+
 ## Build and gate
 
 - Node and npm are pinned: `.nvmrc`, `package.json` `engines`/`packageManager`, `package-lock.json`. Install with `npm ci`.
