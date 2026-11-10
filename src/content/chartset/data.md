@@ -95,9 +95,10 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `RDOCAL` | 线、点 | — | — |
 | `CBLSUB` `PIPSOL` `CBLOHD` `PIPOHD` | 线 | — | — |
 
-- 本组写“面”的类，除 `TSEZNE` 外面本身不画，看得见的是边线；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
-- `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面：`RESTRN`、`CATREA` 决定区域中心符号（规则见 [4.2](/developers/chartset/tiles/#4.2)），也决定准星“此处还有”里这个区域那一行的图标。海图集的中心符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
+- 本组写“面”的类，除 `TSEZNE` 外面本身不画，看得见的是边线，准星点亮它时除外（下文 `dh_area`）；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
+- `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面：`RESTRN`、`CATREA` 决定区域符号（规则见 [4.2](/developers/chartset/tiles/#4.2)），也决定准星“此处还有”里这个区域那一行的图标。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
 - 本组写“面”的类：`RESTRN` 含禁止事项时，准星可由这个区域领先；准星“此处还有”里这个区域那一行带它的关键属性：`ACHARE` 的 `CATACH`、`MARCUL` 的 `CATMFA`、`FSHFAC` 的 `CATFIF`、`MIPARE` 的 `CATMPA`，没有时用 `RESTRN`；其他类先 `RESTRN`，再 `CATREA`（[5.2](/developers/chartset/data/#5.2)）。
+- 本组写“面”的类：`RESTRN` 含禁止事项的面可带 `dh_area`（可选，非空字符串，同一个区域的每一块面同一个值），准星在面内时整个区域点亮；不带就不点亮（[4.2](/developers/chartset/tiles/#4.2)、[5.2](/developers/chartset/data/#5.2)）。
 
 **F. 危险物**
 
@@ -122,6 +123,7 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 - **读地图画出的**：准星只读当前缩放下地图实际画出的要素，用的就是画它时的属性；[4.4](/developers/chartset/tiles/#4.4) 的显示级别和文字避让都算在内。面只在地图用填色画它的级别读到：准星在面内，或在吸附范围内靠近它的边（这时以最近一条边上的点计位置）。只画了边线或名称的面读不到，下一条的类除外。
 - **限制区等区域**：[5.1](/developers/chartset/data/#5.1) E 组写“面”的各类虽然只画边线，地图从 8 级起另给它们一层透明填色（`TSEZNE` 用它自己的填色，见 [4.4](/developers/chartset/tiles/#4.4)），所以准星在面内或靠近它的边时同样读得到。
 - **禁止事项领先**：这些面的 `RESTRN` 含 1、3、5、7、9、11、13、14、15（禁止锚泊、禁止捕鱼、禁止拖网、禁止进入、禁止疏浚、禁止潜水、禁止兴波、避航区、禁止施工）且准星在面内时：如果没有锁定的点、线或航标，也没有包含准星的危险物（`OBSTRN`、`UWTROC`、`WRECKS`）面或架空物（`BRIDGE`、`CBLOHD`、`PIPOHD` 及带净空属性的物标）面，读数由这个区域领先，显示它禁止的事项和所在处的水深，例如“禁止锚泊　30–50米”，详情打开这个区域；否则它排在“此处还有”的最前面。
+- **点亮**：准星在上一条所说的面内、读得到它、并且这个面带 `dh_area`（[4.2](/developers/chartset/tiles/#4.2)）时，地图把同一物标类、`dh_area` 相同的面全部平涂，整个区域点亮，不论读数是否由它领先；准星离开后熄灭。只在吸附范围内靠近它的边、没有进到面内时不点亮。面不带 `dh_area` 时读数照常，只是不点亮。
 - **航标的各部分**：坐标完全相同、并且都画出来了的航标本体、`LIGHTS`、`TOPMAR`、`DAYMAR`、`RTPBCN`、`RADRFL`、`RDOSTA`、`RADSTA` 点是同一座航标，准星把它们作为一个目标锁定和读出，各部分列在这座航标的详情里。
 - **属性**：除 `DEPARE` 面外，详情列出物标携带的、S-57 物标目录认识的全部属性，包括 `INFORM`、`NINFOM`、`TXTDSC`、`SORDAT`、`SORIND`、`SCAMIN`；目录外的键不列出，`dh_surface_cell`、`dh_surface_cscl`（来源）除外。`SOUNDG` 的 `DEPTH` 用于水深读数。
 

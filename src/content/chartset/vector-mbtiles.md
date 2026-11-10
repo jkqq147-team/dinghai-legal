@@ -18,7 +18,7 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 | 水深区范围 | 每个 `DEPARE` 面都有可读的 `DRVAL1`、`DRVAL2`，每个 `DRGARE` 面都有可读的 `DRVAL1`；空串按缺失处理。`DEPARE`、`DRGARE` 层里不带 `dh_boundary = 1` 的线在规范化时丢弃，不拒绝；层里有点则拒绝。上下限不能颠倒。整包至少有一个可读的水深区。 |
 | 逐点测深 | 存在的每个 `SOUNDG` 必须是独立点并带可读的 `DEPTH`。 |
 | 深度单位 | `dh_profile=1` 按米制。公开剖面以 `M_UNIT` 面中 `DUNITS=1` 的范围确认米制，须覆盖相应深度几何；非米制范围与深度几何重叠，或 `M_UNIT` 的单位或范围读不出，都拒绝。 |
-| 可见面的边线 | 不校验。公开剖面中，[5.1](/developers/chartset/data/#5.1) 里几何含“边线”的各类（`TUNNEL`、`RECTRC`、`FERYRT` 除外），由 App 从面环生成同层 `dh_boundary=1` 的边线，替换输入里的边线；沿瓦片边框的段不生成。`dh_profile=1` 的边线原样保留，下述合并的情形除外。生成前，同一瓦片同一层里属性相同（比较方式见 [4.3](/developers/chartset/tiles/#4.3)）、相接或重叠的几块面先合并成一个面再画边线，所以单元切口不出现边线；`dh_profile=1` 中发生了这种合并的物标，该瓦片里它原有的边线换成合并后生成的边线。 |
+| 可见面的边线 | 不校验。公开剖面中，[5.1](/developers/chartset/data/#5.1) 里几何含“边线”的各类（`TUNNEL`、`RECTRC`、`FERYRT` 除外），由 App 从面环生成同层 `dh_boundary=1` 的边线，替换输入里的边线；沿瓦片边框的段不生成。`dh_profile=1` 的边线原样保留，下述合并的情形除外。生成前，同一瓦片同一层里属性相同、相接或重叠的几块面先合并成一个面再画边线，所以单元切口不出现边线；`dh_profile=1` 中发生了这种合并的物标，该瓦片里它原有的边线换成合并后生成的边线。这里比较属性只看 S-57 属性目录内的属性，其中不计的几项同 [4.3](/developers/chartset/tiles/#4.3)；目录外的字段不比较。[5.1](/developers/chartset/data/#5.1) E 组写“面”的各类（`TSEZNE`、`FERYRT` 除外）另有三点：合并时，相隔不到 1 pt（一张瓦片按 512 pt 计）的缝也连上；发生合并的，合并出的面替换原来的几块，接缝处的小台阶被抹平，瓦片边框上的顶点不动；同层里属性与某个面相同、并且落在该面内的点要素被丢弃。 |
 
 缺少物标种类（浮标、陆地、灯标、测深点或限制区）不拒绝。可选信息缺失或读不出（例如 `dh_prev_valdco`、`dh_drval1`、来源单元）不拒绝；导入确认页在“这份海图的限制”中说明对使用的影响，不列字段名，例如“部分等深线不能显示为安全等深线。”、“部分危险物周围的水深不明。”、“部分物标查不到所属图幅。”。缺少 `dh_has_body` 不拒绝，也不在导入确认页提示。
 
@@ -26,8 +26,8 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 
 ## 7.2 一次单向规范化
 
-- 安装前只转换一次，不修改原文件。输出是一个海图集：`manifest.json`（`external`、`tileProfile 1`）、`chart.mbtiles`（`dh_profile=1`、gzip MVT、TMS）和 `vector-import.json`（识别结果与缺少的可选信息）。
-- 输入里没有 `dh_area_symbol` 层时，App 为它生成区域中心符号（[4.2](/developers/chartset/tiles/#4.2)）：取最深一级瓦片中 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面，同类、属性相同的面合并后每个连通的部分算一个区域，按 4.2 的规则选符号、放锚点和重复点，写进 10 级起的瓦片。输入里已有 `dh_area_symbol` 层时原样保留，不再生成。
+- 安装前只转换一次，不修改原文件；已经安装的不再转换，要得到新版 App 生成的内容（例如 `dh_area`），重新导入原文件。输出是一个海图集：`manifest.json`（`external`、`tileProfile 1`）、`chart.mbtiles`（`dh_profile=1`、gzip MVT、TMS）和 `vector-import.json`（识别结果与缺少的可选信息）。
+- 输入里没有 `dh_area_symbol` 层时，App 为它生成区域符号和点亮用的 `dh_area`（[4.2](/developers/chartset/tiles/#4.2)）：取最深一级瓦片中 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面，以及 [5.1](/developers/chartset/data/#5.1) E 组写“面”的其他类中 `RESTRN` 含禁止事项（[5.2](/developers/chartset/data/#5.2)）的面，同类、属性相同的面合并后每个连通的部分算一个区域。各级瓦片里，认出属于 `RESTRN` 含禁止事项的区域的面写上该区域的 `dh_area`；前 9 类的区域按 4.2 的规则选符号、放点，写进 10 级起的瓦片。输入里已有 `dh_area_symbol` 层时，两样都不生成：这一层原样保留，面上已有的 `dh_area` 照用，没有就不点亮。
 - 规范化通过后显示“导入海图”确认页；点“取消”不安装。
 - 输出的缩放与范围来自实际数据；`id` 取输入内容的指纹，同样的内容再导入替换前一次导入（[2.3](/developers/chartset/manifest/#2.3)）；`createdAt` 是本次生成时间，不是测绘日期。
 - 识别通过不是海图真实、完整、最新或航行安全的认证。

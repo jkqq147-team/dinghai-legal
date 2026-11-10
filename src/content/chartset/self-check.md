@@ -7,7 +7,7 @@ description: 在真机定海 App 里导入海图集自检；导入被拒绝时�
 
 ## 6.1 最小样例
 
-[`minimal-chartset.zip`](/developers/chartset/downloads/minimal-chartset.zip) 是一个能被 App 导入的完整海图集（ZIP 约 17 KB）：旧金山湾口外一个虚构小岛，三档水深区、两条等深线、四个水深点、陆地面与岸线、一个带边线的锚地、一个左侧标浮标及其灯、一个沉船，z10–z16。ZIP 里是包装目录 `minimal-chartset/`，内含 `manifest.json` 与 `chart.mbtiles`（[1.1](/developers/chartset/structure/#1.1)）。
+[`minimal-chartset.zip`](/developers/chartset/downloads/minimal-chartset.zip) 是一个能被 App 导入的完整海图集（ZIP 约 18 KB）：旧金山湾口外一个虚构小岛，三档水深区、两条等深线、四个水深点、陆地面与岸线、一个带边线的锚地、一个左侧标浮标及其灯、一个沉船、一个带边线和 `dh_area` 的禁锚区，以及锚地和禁锚区各一个区域符号点（`dh_area_symbol`），z10–z16。ZIP 里是包装目录 `minimal-chartset/`，内含 `manifest.json` 与 `chart.mbtiles`（[1.1](/developers/chartset/structure/#1.1)）。
 
 它由参考生成脚本 [`generate-chartset-sample.py`](/developers/chartset/downloads/generate-chartset-sample.py) 生成，只需 Python 3 标准库：
 
@@ -103,7 +103,8 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 - 三档水深区依次为浅水蓝、浅青蓝、白色；小岛是陆地色，岸线、等深线是细线；这些从样例最浅的 10 级起就有。
 - 11 级起有水深数字；浮标与灯的符号 11.5 起淡入，12 级起完全显示；13 级起有等深线数值。在这之前都不画（[4.4](/developers/chartset/tiles/#4.4)）；浅于 11.5 时，灯只显示为绿色圆点。
-- 锚地只有品红虚线边界，内部不填色（来自 `dh_boundary` 线）。
+- 锚地（东南角）和禁锚区（西北角）都只有品红虚线边界，内部不填色（边界来自 `dh_boundary` 线）。10.5 级起淡入、11 级起完全显示各自的区域符号：锚地是 `anchorage`，禁锚区是 `noAnchoring`（来自 `dh_area_symbol` 点，各在区域正中）。符号的点被先放下的文字占住时（例如 13 级起显示的锚地名称），符号画在紧挨的位置上（[4.2](/developers/chartset/tiles/#4.2)）。
+- 把准星移进禁锚区（例如 `37.808534, -122.635916`）：整个禁锚区点亮（来自面上的 `dh_area`），读数为“禁止锚泊　10–20米”；准星移出后熄灭。准星移进锚地不点亮：它没有禁止事项，面上也没有 `dh_area`。
 - 沉船位于 `37.803144, -122.628527`，12 级起各级准星读数都是“Sample Wreck · 6.5米”。它在 3 米安全水深下不是孤立危险物，符号 11.5 起才淡入，更浅时不画、读不到（[4.4](/developers/chartset/tiles/#4.4)）。
 - 水面 `37.799100, -122.625684` 放大后读数为“0–5米”；小岛内不显示水深。
 - 样例覆盖范围外显示定海底图，不是这份海图集提供的内容。
@@ -118,6 +119,9 @@ App 导入时不检查瓦片内容，所以“导入成功，但地图上看不�
 | 某一类没有 | 当前缩放浅于 [4.4](/developers/chartset/tiles/#4.4) 表中该类的显示级别；source-layer 名不是大写 S-57 缩写；几何类型不对，例如航标写成线或面、面的边线没带 `dh_boundary`（[5.1](/developers/chartset/data/#5.1)）。 |
 | 水深区颜色不对 / 没有水深数字 | `DRVAL1`/`DRVAL2`/`DEPTH` 不是数值，或单位不是米；`SOUNDG` 没拆成单点；当前缩放浅于 11 级（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 符号是通用形状 | 选符号的属性缺失或值不对（[5.1](/developers/chartset/data/#5.1)），列表属性没有写成逗号串。 |
+| 限制区等区域没有区域符号，或比写入的点少 | 没有 `dh_area_symbol` 层；`dh_symbol` 缺失或不是 [4.2](/developers/chartset/tiles/#4.2) 列出的值；当前缩放浅于 10.5 级或该点的 `dh_minzoom`；这一级的瓦片没写这个点；点和周围八个位置都与已放下的文字或其他区域符号相碰（[4.2](/developers/chartset/tiles/#4.2)）。 |
+| 准星进入有禁止事项的区域，区域不点亮或只亮一部分 | 面上没有 `dh_area` 或值是空串；同一个区域的各块面、各级瓦片写的值不一致，或有的没写；物标类不在 [5.1](/developers/chartset/data/#5.1) E 组写“面”的类里；这一级没有写面，只写了边线（[4.2](/developers/chartset/tiles/#4.2)、[5.2](/developers/chartset/data/#5.2)）。 |
+| 准星进入一个区域，别的区域也点亮 | 同一物标类的两个区域用了同一个 `dh_area` 值（[4.2](/developers/chartset/tiles/#4.2)）。 |
 | 某些缩放级别点选读不到 | 浅于 [4.4](/developers/chartset/tiles/#4.4) 所列的显示级别时，该类物标本来就不显示、也点选不到；或该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 详情少了属性 | 属性名不是 S-57 目录里的缩写，或只写在了部分缩放级别（[5.2](/developers/chartset/data/#5.2)）。 |
 

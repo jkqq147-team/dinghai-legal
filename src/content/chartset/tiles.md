@@ -17,9 +17,9 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
 - **source-layer 名必须是大写的 S-57 物标类缩写**，与 IHO S-57 物标目录完全一致（例如 `DEPARE`、`LIGHTS`）；例外只有可选的 `dh_coverage` 和 `dh_area_symbol`（下两条）。目录外的层名不画，也不报告。
 - **覆盖边界线 `dh_coverage`**（可选）：整个海图集数据覆盖范围的外边界，闭合的 LineString/MultiLineString，不带属性；内部各来源之间的接缝不写。
-- **区域中心符号 `dh_area_symbol`**（可选）：Point 要素，带字符串字段 `dh_symbol`，可带数值字段 `dh_minzoom`（见下表）。地图在每个点画 `dh_symbol` 指定的区域中心符号：10.5 级起淡入，11 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。与已放下的文字（水深数字、名称等）或其他区域中心符号相碰的不画。准星不报告这些点。按 manifest 导入的海图集，App 不生成这一层，不写就没有区域中心符号（无 manifest 的矢量 MBTiles 见 [7.2](/developers/chartset/vector-mbtiles/#7.2)）。
+- **区域符号 `dh_area_symbol`**（可选）：Point 要素，带字符串字段 `dh_symbol`，可带数值字段 `dh_minzoom`（见下表）。地图为每个点画一个 `dh_symbol` 指定的区域符号：10.5 级起淡入，11 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。符号先放在点上；在那里与已放下的文字（水深数字、名称等）或已放下的另一个区域符号相碰时，依次改放到紧挨该点的八个方向上，画在第一处不相碰的位置；九处都相碰的不画。所以生产方不必让点避开水深数字和名称，物标密集处画出的符号会比写入的点少。准星不报告这些点。按 manifest 导入的海图集，App 原样安装瓦片，不生成这一层，不写就没有区域符号（无 manifest 的矢量 MBTiles 见 [7.2](/developers/chartset/vector-mbtiles/#7.2)）。
 
-  `dh_symbol` 取下列 8 个值之一，或在其后加 `+more`（符号旁多一个小“!”，表示 `RESTRN` 还有该符号所代表一组之外的限制，例如 `noAnchoring+more`）；其他值不画：`noEntry`（禁止或限制进入、避航区）、`noAnchoring`（禁止或限制锚泊）、`noFishing`（禁止或限制捕鱼、拖网）、`caution`（注意）、`anchorage`（锚地）、`cable`（电缆区）、`farm`（养殖场）、`information`（信息）。
+  `dh_symbol` 取下列 8 个值之一，或在其后加 `+more`（符号旁多一个小“!”，表示 `RESTRN` 还有该符号所代表一组之外的限制，例如 `noAnchoring+more`）；缺 `dh_symbol` 或取其他值的点不画。8 个值按相碰时先放的顺序是：`noEntry`（禁止或限制进入、避航区）、`noAnchoring`（禁止或限制锚泊）、`noFishing`（禁止或限制捕鱼、拖网）、`caution`（注意）、`anchorage`（锚地）、`cable`（电缆区）、`farm`（养殖场）、`information`（信息）。
 
   App 从 S-57 生成海图、或为无 manifest 的矢量 MBTiles 生成这一层时（[7.2](/developers/chartset/vector-mbtiles/#7.2)），对 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面按下列顺序取第一个成立的：
 
@@ -28,7 +28,25 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   3. `ACHARE` → `anchorage`；`CBLARE` → `cable`；`MARCUL` → `farm`。
   4. 其余（`RESARE`、`DMPGRD`、`PIPARE`）：`RESTRN` 含 9–13，或物标类是 `DMPGRD`、`PIPARE`，或 `CATREA` 含 4、5、6、7、10、18、20、22、23、24、27、28 → `information`；否则 `caution`。
 
-  它这样放点：同一物标类、属性相同（比较方式见 [4.3](/developers/chartset/tiles/#4.3)）且相接或重叠的面合成一个区域；每个区域一个锚点，取整个区域的不可达极点（区域内离边界最远处），能做到时离航标本体和灯至少 60 米，写进 10 级起各级瓦片；大区域从 11 级起另在每一级固定的世界网格上加重复点，网格间距 200 pt（一张瓦片按 512 pt 计），重复点离区域边界至少 16 pt、离锚点至少 100 pt；最深一级的瓦片同时带更深各级（至 18 级）的网格点，各带 `dh_minzoom`。点只写在该级画出这个区域的地方。App 不检查点的位置，生产方可照此放置。
+  点放在哪里、一个区域放几个由生产方决定：App 不检查点的位置，也不把点和某个面对应起来，写一个点就画一个符号。App 自己生成这一层时这样放，生产方可照此放置：
+
+  - 同一物标类、属性相同（比较方式见 [4.3](/developers/chartset/tiles/#4.3)）且相接或重叠的面合成一个区域。
+  - 每个区域有一个锚点：区域最大一块的不可达极点（区域内离边界最远处），能做到时离航标本体和灯至少 60 米。10 级瓦片给每个区域写锚点；11 级及更深的瓦片只给不细长的区域写锚点。
+  - 细长的区域（最大一环的最小外接矩形，可旋转，长边至少是短边的 2 倍）从 11 级起沿主轴放点：按该级约 115 pt 一段（一张瓦片按 512 pt 计）把主轴等分，每段一个点，取这一段里离边界最远处；分成多段时，离边界不足 12 pt 的段不放。
+  - 不细长的区域从 11 级起另在每一级固定的世界网格上加点，网格间距 200 pt，点离区域边界至少 16 pt、离锚点至少 100 pt；几个区域重叠处，一个网格点只写给其中一个区域。
+  - 最深一级的瓦片同时带更深各级（至 18 级）的点，各带 `dh_minzoom`。
+  - 符号是 `caution` 的 `CTNARE`，在符号是 `noEntry`、`noAnchoring`、`noFishing`（含 `+more`）的 `RESARE` 以及 `ACHARE`、`CBLARE`、`MARCUL` 的范围内不放点。
+  - 点只写在该级瓦片画出这个区域的地方；同一张瓦片里相距不到 8 pt 的相同符号只写一个。
+- **点亮用的区域标识 `dh_area`**（可选）：写在面要素上的非空字符串。限制区等区域平时只有虚线边线和区域符号，面本身不上色（[5.1](/developers/chartset/data/#5.1) E 组）。准星在一个带 `dh_area` 的面内、并且读得到这个面时（[5.2](/developers/chartset/data/#5.2)），地图把这份海图集里同一物标类、`dh_area` 相同的面全部平涂一层边线的品红色（日间外观不透明度 24%，深色外观 16%），整个区域点亮；准星离开后熄灭。按 manifest 导入的海图集，App 原样安装瓦片，不写这个字段：哪些面点亮、哪几块是同一个区域，全由生产方写的 `dh_area` 决定。
+
+  - **写在哪些面上**：[5.1](/developers/chartset/data/#5.1) E 组写“面”的各物标类中，`RESTRN` 含 1、3、5、7、9、11、13、14、15 之一的面，也就是准星读数会报出禁止事项的面（[5.2](/developers/chartset/data/#5.2)）。别的面不要写：App 不核对 `RESTRN`，E 组写“面”的类的面带了 `dh_area` 就会点亮，读数却没有禁止事项可报；其他物标类的面写了也不点亮。
+  - **同一个区域一个值**：一个区域在每张瓦片、每个缩放级别、`chart.mbtiles` 和 `overview.mbtiles` 里的每一块面都写同一个值。点亮的只是带这个值的面，漏写的那几块不亮。
+  - **不同区域不同值**：一个值在整个海图集内只用于一个区域。同一物标类的两个区域共用一个值时，准星进入其中一个，两个一起点亮。
+  - 重叠的区域不必切开：几个点亮的区域相叠处只涂一层，不比别处深。
+  - 没有 `dh_area` 或值为空串的面不点亮；它的边线、区域符号和准星读数不受影响。
+  - 只有面上的 `dh_area` 起作用；`dh_boundary = 1` 的边线和 `dh_area_symbol` 的点不靠它。
+
+  没有 `dh_area`、`dh_area_symbol` 的海图集仍可导入和使用：区域只有边线，准星进入时不点亮，直到重新导出带这些字段的海图集再导入（同一 `id` 替换旧的那份，[2.3](/developers/chartset/manifest/#2.3)）；App 不给已安装的海图集补写。已有 `dh_area_symbol` 而没有 `dh_area` 的，符号照上文画出，大小是点状符号的 1.3 倍。
 - **属性名 = S-57 属性缩写**，大写；定海派生字段除外（见下文）。属性值按 S-57 属性类型编码：
 
   | S-57 类型 | 瓦片中的值 | 例 |
@@ -50,8 +68,9 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | `dh_has_body` | 整数 `1`，可选 | 只在 `LIGHTS` 点上：同一单元里有与灯坐标完全相同的 `BOYSPP`、`BCNSPP`、`BOYSAW`、`BCNSAW`、`LITFLT`、`LITVES`、`BOYLAT`、`BCNLAT`、`BOYCAR`、`BCNCAR`、`BOYISD`、`BCNISD` 点时写 `1`；否则不写，不能仅凭附近有本体或 `FFPT` 关系写入。 |
   | `dh_surface_cell` | 字符串，可选 | 数据的来源单元名。 |
   | `dh_surface_cscl` | 整数，可选 | 来源单元的编辑比例尺分母；与非空的 `dh_surface_cell` 一起提供时使用。 |
-  | `dh_symbol` | 字符串 | 只在 `dh_area_symbol` 点上：画哪个区域中心符号（见上文）。 |
+  | `dh_symbol` | 字符串 | 只在 `dh_area_symbol` 点上：画哪个区域符号（见上文）。 |
   | `dh_minzoom` | 数值，可选 | 只在 `dh_area_symbol` 点上：从这一级起才画这个点；不写则不限。 |
+  | `dh_area` | 非空字符串，可选 | 只在面上：准星点亮用的区域标识（见上文）。 |
 
 ## 4.3 几何
 
@@ -82,7 +101,7 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | 8 | — | `LIGHTS` | 点，画成灯色圆点；11.5–12 淡出，由灯光符号接替 |
   | 10 | — | `SEAARE` | 带 `CATSEA` 的名称 |
   | 11 | 10.5 起 | `CBLSUB` `PIPSOL` | 线 |
-  | 11 | 10.5 起 | `dh_area_symbol` | 点，画成区域中心符号（[4.2](/developers/chartset/tiles/#4.2)） |
+  | 11 | 10.5 起 | `dh_area_symbol` | 点，画成区域符号（[4.2](/developers/chartset/tiles/#4.2)） |
   | 11 | — | `SOUNDG` | 点，画成水深数字 |
   | 11 | — | `LNDRGN` `BUAARE` | 名称 |
   | 12 | 11.5 起 | `BOYLAT` `BCNLAT` `BOYCAR` `BCNCAR` `BOYISD` `BCNISD` `BOYSAW` `BCNSAW` `BOYSPP` `BCNSPP` `LITFLT` `LITVES` `TOPMAR` `LIGHTS` | 点：航标本体、顶标和灯光符号 |

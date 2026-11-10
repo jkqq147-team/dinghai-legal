@@ -5,7 +5,9 @@ A reference producer for the DingHai chart set integration manual
 (https://dinghai.app/developers/chartset/), using only the Python
 standard library: it projects a few hand-written objects (depth areas,
 depth contours, soundings, a land area and its coastline, an anchorage, a
-lateral buoy with its light, and a wreck) to Web Mercator, clips them per
+lateral buoy with its light, a wreck, an area where anchoring is prohibited
+with its area identity (dh_area), and the two areas' symbol points
+(dh_area_symbol)) to Web Mercator, clips them per
 tile, encodes MVT 2.1, gzips each tile, and writes a plain MBTiles 1.3 file
 (`tiles` is a table) plus `manifest.json`.
 
@@ -84,6 +86,11 @@ SHALLOW = ellipse(650, 450)   # 0–5 m ring around the island
 MEDIUM = ellipse(1000, 750)   # 5–10 m ring
 OUTER = rectangle(-1800, -1300, 1800, 1300)  # 10–20 m out to the edge
 ANCHORAGE = rectangle(1150, -1150, 1650, -750)
+NO_ANCHORING = rectangle(-1650, 750, -1150, 1150)
+# What names the no-anchoring area: the same string on every polygon of it,
+# in every tile and at every zoom, and on no other area of the chart set.
+NO_ANCHORING_AREA = "sample-no-anchoring"
+AREA_SYMBOLS = "dh_area_symbol"
 
 # Each feature: (layer, kind, geometry, attributes). kind is "polygon"
 # (list of rings, first outer), "line" (list of points; closed when the
@@ -114,6 +121,15 @@ FEATURES: list[tuple[str, str, object, dict]] = [
     ("WRECKS", "point", to_lonlat(-750, 350),
      {"CATWRK": 2, "WATLEV": 3, "VALSOU": 6.5, "OBJNAM": "Sample Wreck",
       "INFORM": "Generated sample object."}),
+    # An area where anchoring is prohibited (RESTRN 1). Its polygon carries
+    # dh_area, so the whole area lights while the crosshair is inside it;
+    # its outline is a dh_boundary line, as the anchorage's.
+    ("RESARE", "polygon", [NO_ANCHORING], {"RESTRN": "1", "dh_area": NO_ANCHORING_AREA}),
+    ("RESARE", "line", NO_ANCHORING + NO_ANCHORING[:1], {"RESTRN": "1", "dh_boundary": 1}),
+    # The areas' symbols: one point each, in a layer of their own, naming
+    # the symbol to draw there.
+    (AREA_SYMBOLS, "point", to_lonlat(-1400, 950), {"dh_symbol": "noAnchoring"}),
+    (AREA_SYMBOLS, "point", to_lonlat(1400, -950), {"dh_symbol": "anchorage"}),
 ]
 
 
@@ -312,7 +328,13 @@ def tile_features(zoom: int, column: int, row: int):
         parts = []
         if kind == "point":
             x, y = world(*geometry, zoom)
-            if x0 <= x <= x1 and y0 <= y <= y1:
+            if layer == AREA_SYMBOLS:
+                # One point, in the one tile it lies in: a copy in a
+                # neighbour's buffer would be a second symbol point.
+                local = to_local([(x, y)], ox, oy)
+                if 0 <= local[0][0] < EXTENT and 0 <= local[0][1] < EXTENT:
+                    parts = [local]
+            elif x0 <= x <= x1 and y0 <= y <= y1:
                 parts = [to_local([(x, y)], ox, oy)]
         elif kind == "line":
             projected = [world(lon, lat, zoom) for lon, lat in geometry]
