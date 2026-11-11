@@ -37,6 +37,7 @@ export default defineConfig({
 					items: [
 						{ label: '隐私政策', translations: { en: 'Privacy Policy' }, link: '/privacy/' },
 						{ label: '用户支持', translations: { en: 'Support' }, link: '/support/' },
+						{ label: '数据源接入', translations: { en: 'Connect Data Sources' }, link: '/data-sources/' },
 					],
 				},
 				{
