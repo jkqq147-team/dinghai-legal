@@ -26,8 +26,8 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 
 ## 7.2 一次单向规范化
 
-- 安装前只转换一次，不修改原文件；已经安装的不再转换，要得到新版 App 生成的内容，重新导入原文件；点亮规则的更新不需要重新导入（[4.2](/developers/chartset/tiles/#4.2)）。输出是一个海图集：`manifest.json`（`external`、`tileProfile 1`）、`chart.mbtiles`（`dh_profile=1`、gzip MVT、TMS）和 `vector-import.json`（识别结果与缺少的可选信息）。
-- 输入里没有 `dh_area_symbol` 层时，App 为它生成区域符号（[4.2](/developers/chartset/tiles/#4.2)）：取最深一级瓦片中 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面，同类、属性相同的面合并后每个连通的部分算一个区域，按 4.2 的规则选符号、放点，写进 10 级起的瓦片。输入里已有 `dh_area_symbol` 层时，这一层原样保留。符号生成不参与点亮匹配，点亮直接按物标类和 `RESTRN` 集合判断（[4.2](/developers/chartset/tiles/#4.2)）。
+- 安装前只转换一次，不修改原文件；已经安装的不再转换，要得到新版 App 生成的内容，重新导入原文件；改为只点亮边线不需要重新导入，边线仍须符合 [4.3](/developers/chartset/tiles/#4.3) 的要求（点亮规则见 [4.2](/developers/chartset/tiles/#4.2)）。输出是一个海图集：`manifest.json`（`external`、`tileProfile 1`）、`chart.mbtiles`（`dh_profile=1`、gzip MVT、TMS）和 `vector-import.json`（识别结果与缺少的可选信息）。
+- 输入里没有 `dh_area_symbol` 层时，App 为它生成区域符号（[4.2](/developers/chartset/tiles/#4.2)）：取最深一级瓦片中 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面，同类、属性相同的面合并后每个连通的部分算一个区域，按 4.2 的规则选符号、放点，写进 10 级起的瓦片。输入里已有 `dh_area_symbol` 层时，这一层原样保留。符号生成不参与点亮匹配，边线点亮直接按物标类和 `RESTRN` 集合判断（[4.2](/developers/chartset/tiles/#4.2)）。
 - 规范化通过后显示“导入海图”确认页；点“取消”不安装。
 - 输出的缩放与范围来自实际数据；`id` 取输入内容的指纹，同样的内容再导入替换前一次导入（[2.3](/developers/chartset/manifest/#2.3)）；`createdAt` 是本次生成时间，不是测绘日期。
 - 识别通过不是海图真实、完整、最新或航行安全的认证。
