@@ -15,7 +15,7 @@ description: 定海海图集的数据契约：文件结构、字段含义、App 
 - `chart.mbtiles` 是 MBTiles 1.3 矢量瓦片集：gzip 压缩的 MVT，TMS 行号，Web Mercator 网格，metadata 写 `dh_profile = 1`（[第 3 节](/developers/chartset/mbtiles/)）。
 - 每个 source-layer 是一个大写 S-57 物标类缩写（可选的 `dh_coverage`、`dh_area_symbol` 除外），属性用 S-57 属性缩写，值按 S-57 属性类型编码，深度用米（[第 4 节](/developers/chartset/tiles/)）。
 - 面状物标要有可见边线时，另写一条带 `dh_boundary = 1` 的线，放在同一 source-layer；被单元切开的同一个面先合并再生成边线，切口不写边线（[4.3](/developers/chartset/tiles/#4.3)）。
-- 限制区等区域平时只画边线和区域符号；准星进入能读到、有禁止事项的区域面时，当前画出的同一物标类、`RESTRN` 取值集合相同的区域边线一起点亮，内部不涂，不计列表顺序和重复值，不需要新增派生字段。区域符号由可选的 `dh_area_symbol` 点给出；按 manifest 导入时 App 原样安装瓦片，不替你生成区域符号（[4.2](/developers/chartset/tiles/#4.2)）。
+- 限制区等区域只画边线和区域符号，面本身不画。区域符号由可选的 `dh_area_symbol` 点给出；按 manifest 导入时 App 原样安装瓦片，不替你生成区域符号（[4.2](/developers/chartset/tiles/#4.2)）。
 - 最小样例与参考生成脚本见下表；自检方法见[第 6 节](/developers/chartset/self-check/)。
 
 ## 下载
