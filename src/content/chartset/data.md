@@ -51,7 +51,8 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | 物标类 | 几何 | 必须 | 可选 |
 | --- | --- | --- | --- |
 | `HULKES` `DRYDOC` | 面、边线 | — | — |
-| `PONTON` `FLODOC` `DAMCON` `DYKCON` `CAUSWY` `BRIDGE` `GATCON` | 面、边线、线 | — | — |
+| `PONTON` `FLODOC` `DAMCON` `DYKCON` `CAUSWY` `GATCON` | 面、边线、线 | — | — |
+| `BRIDGE` | 面、边线、线 | — | `VERCSA`、`VERCLR`、`VERCCL`、`VERCOP`（净空）；`CATBRG`（开启桥）；见表下 |
 | `SLCONS` | 面、边线、线、点 | — | — |
 | `CONVYR` `OILBAR` | 线 | — | — |
 | `HRBFAC` | 点、线、面 | — | `CATHAF`（符号）；名称（标注；线、面没有名称时不显示） |
@@ -65,6 +66,12 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `SILTNK` | 面、边线、点 | — | `CATSIL`（点的符号）；`CONVIS`（醒目） |
 | `WATTUR` `FOGSIG` | 点 | — | — |
 | `CGUSTA` `NEWOBJ` `SISTAW` `SISTAT` `CRANES` `FORSTC` `CTRPNT` `SLOGRD` | 点 | — | — |
+
+- **净空**：`BRIDGE`、`CBLOHD`、`PIPOHD` 的 `VERCSA`（安全净空）、`VERCLR`（净空）、`VERCCL`（关闭净空）、`VERCOP`（开启净空）按米读，写成米制浮点（[4.2](/developers/chartset/tiles/#4.2)）。App 不换算单位，也不看源数据的 `HUNI`、`HUNITS`；源数据不是米的，写入前换算成米。负值和读不出数字的值，地图和准星读数不写。
+- 地图从 13 级起在物标旁写出净空，按安全净空、净空、关闭净空、开启净空的顺序，例如“净空 38.7米”。线（不含边线）在中点旁沿线写一行，各项用“ · ”隔开；一条线跨多张瓦片时，每张瓦片里的那一段各写一次；线短得放不下这行字时，这一级不写。`BRIDGE` 的面（大桥可以每一跨写一个面，各带自己的净空）把各项分行写在面内。这些文字与其他文字互相避让（[4.4](/developers/chartset/tiles/#4.4)）。
+- `BRIDGE` 的 `CATBRG` 含 2、3、4、5、7、8（开启桥、平转桥、升降桥、竖转桥、吊桥、运渡桥）而没有 `VERCOP` 时，净空之后再写“开启桥”；只有这样的 `CATBRG`、没有净空属性时只写“开启桥”。
+- 准星读数的标题是名称（没有名称时用物标类名）后接地图写的各项，例如“架空电缆 · 安全净空 36.25米 · 净空 40米”。详情把净空按同样的名字和顺序排在属性最前面，值带“米”。其他物标类带这些属性时，准星读数和详情也这样写，地图不写。
+- 数值写到厘米，厘米以下舍去、不进位，例如 12.349 写作“12.34米”（与整厘米相差不到 0.5 微米的按整厘米算，所以 2.3 仍写作“2.3米”）；末尾的 0 不写，例如 40 写作“40米”。地图、准星读数和详情都这样写。
 
 **D. 航标**
 
@@ -106,7 +113,8 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `ACHARE` | 面、边线、点 | — | 名称（标注）；见表下 |
 | `PILBOP` | 边线、点 | — | 见表下 |
 | `RDOCAL` | 线、点 | — | `ORIENT`（点的方向符号；`TRAFIC` 为 4 时画成双向）；`COMCHA`（频道） |
-| `CBLSUB` `PIPSOL` `CBLOHD` `PIPOHD` | 线 | — | — |
+| `CBLSUB` `PIPSOL` | 线 | — | — |
+| `CBLOHD` `PIPOHD` | 线 | — | 净空属性（见 C 组表下） |
 
 - 本组写“面”的类，除 `TSEZNE` 的填色和 `SNDWAV` 的沙波图案外，面本身不画，看得见的是边线（[4.2](/developers/chartset/tiles/#4.2)）；`TSSLPT` 不画边线，看得见的只有它的方向箭头或区域符号；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
 - `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`PRCARE`、`ISTZNE`、`OSPARE` 的面：`RESTRN`、`CATREA` 决定区域符号，`OSPARE` 的 `CATPRA` 只含 9 时是风电场符号；`TSSLPT` 的面：有 `ORIENT` 时是指向 `ORIENT` 的方向箭头，没有时是 `caution`；`TSSRON` 的面是 `roundabout`，`TSSCRS` 的面是 `caution`；`RCTLPT`、`DWRTPT`、`TWRTPT`、`FAIRWY`、`RECTRC` 的面：`ORIENT`、`TRAFIC` 决定单向或双向的方向箭头，缺了时画“?”（`DWRTPT` 画竖直的双向箭头，`FAIRWY` 不画）（规则见 [4.2](/developers/chartset/tiles/#4.2)）。区域符号也决定准星“此处还有”里这个区域那一行的图标。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
