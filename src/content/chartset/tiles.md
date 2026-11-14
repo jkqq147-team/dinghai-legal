@@ -17,16 +17,21 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
 - **source-layer 名必须是大写的 S-57 物标类缩写**，与 IHO S-57 物标目录完全一致（例如 `DEPARE`、`LIGHTS`）；例外只有可选的 `dh_coverage` 和 `dh_area_symbol`（下两条）。目录外的层名不画，也不报告。
 - **覆盖边界线 `dh_coverage`**（可选）：整个海图集数据覆盖范围的外边界，闭合的 LineString/MultiLineString，不带属性；内部各来源之间的接缝不写。
-- **区域符号 `dh_area_symbol`**（可选）：Point 要素，带字符串字段 `dh_symbol`，可带数值字段 `dh_minzoom`（见下表）。地图为每个点画一个 `dh_symbol` 指定的区域符号：10.5 级起淡入，11 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。符号先放在点上；在那里与已放下的文字（水深数字、名称等）或已放下的另一个区域符号相碰时，依次改放到紧挨该点的八个方向上，画在第一处不相碰的位置；九处都相碰的不画。所以生产方不必让点避开水深数字和名称，物标密集处画出的符号会比写入的点少。准星不报告这些点。按 manifest 导入的海图集，App 原样安装瓦片，不生成这一层，不写就没有区域符号（无 manifest 的矢量 MBTiles 见 [7.2](/developers/chartset/vector-mbtiles/#7.2)）。
+- **区域符号 `dh_area_symbol`**（可选）：Point 要素，带字符串字段 `dh_symbol`，可带数值字段 `dh_minzoom`（见下表）和 `ORIENT`。带 `ORIENT` 的点画成通航分道的方向箭头（见下文）；其余每个点，地图画一个 `dh_symbol` 指定的区域符号：10.5 级起淡入，11 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。符号先放在点上；在那里与已放下的文字（水深数字、名称等）或已放下的另一个区域符号相碰时，依次改放到紧挨该点的八个方向上，画在第一处不相碰的位置；九处都相碰的不画。所以生产方不必让点避开水深数字和名称，物标密集处画出的符号会比写入的点少。准星不报告这些点。按 manifest 导入的海图集，App 原样安装瓦片，不生成这一层，不写就没有区域符号（无 manifest 的矢量 MBTiles 见 [7.2](/developers/chartset/vector-mbtiles/#7.2)）。
 
-  `dh_symbol` 取下列 8 个值之一，或在其后加 `+more`（符号旁多一个小“!”，表示 `RESTRN` 还有该符号所代表一组之外的限制，例如 `noAnchoring+more`）；缺 `dh_symbol` 或取其他值的点不画。8 个值按相碰时先放的顺序是：`noEntry`（禁止或限制进入、避航区）、`noAnchoring`（禁止或限制锚泊）、`noFishing`（禁止或限制捕鱼、拖网）、`caution`（注意）、`anchorage`（锚地）、`cable`（电缆区）、`farm`（养殖场）、`information`（信息）。区域符号大小是点状符号的 1.3 倍。
+  `dh_symbol` 取下列 9 个值之一，或在其后加 `+more`（符号旁多一个小“!”，表示 `RESTRN` 还有该符号所代表一组之外的限制，例如 `noAnchoring+more`）；缺 `dh_symbol` 或取其他值的点不画（下文的 `trafficLane:` 除外）。9 个值按相碰时先放的顺序是：`noEntry`（禁止或限制进入、避航区）、`noAnchoring`（禁止或限制锚泊）、`noFishing`（禁止或限制捕鱼、拖网）、`roundabout`（环形分道）、`caution`（注意）、`anchorage`（锚地）、`cable`（电缆区）、`farm`（养殖场）、`information`（信息）。区域符号大小是点状符号的 1.3 倍。
 
-  App 从 S-57 生成海图、或为无 manifest 的矢量 MBTiles 生成这一层时（[7.2](/developers/chartset/vector-mbtiles/#7.2)），对 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面按下列顺序取第一个成立的：
+  带 `ORIENT` 的点不看 `dh_symbol`，一律画成通航分道的方向箭头。`ORIENT` 写 0–360 的数值，是箭头所指的方向（自真北顺时针的度数），箭头方向固定在地图上。箭头 10 级起淡入，10.5 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。箭头不参与上述避让，写一个点就在该点画一个。12 级及更深时箭头与点状符号同大，12 级以下逐渐缩小，10 级时为 12 级大小的一半。App 写这种点时，`dh_symbol` 是 `trafficLane:` 后接同一度数（整数度不带小数，例如 `trafficLane:45`），`ORIENT` 是这个度数的数值；生产方请两项一起写。
 
-  1. `RESTRN` 含 7、8、14 → `noEntry`；否则含 1、2 → `noAnchoring`；否则含 3、4、5、6 → `noFishing`。`RESTRN` 还有这一组以外的值时加 `+more`。
-  2. `RESTRN` 含 1–14 以外的值，或物标类是 `CTNARE`、`MIPARE`、`SPLARE`，或 `RESARE` 的 `CATREA` 含 1、8、9、12、14、19、25 → `caution`。
-  3. `ACHARE` → `anchorage`；`CBLARE` → `cable`；`MARCUL` → `farm`。
-  4. 其余（`RESARE`、`DMPGRD`、`PIPARE`）：`RESTRN` 含 9–13，或物标类是 `DMPGRD`、`PIPARE`，或 `CATREA` 含 4、5、6、7、10、18、20、22、23、24、27、28 → `information`；否则 `caution`。
+  App 从 S-57 生成海图、或为无 manifest 的矢量 MBTiles 生成这一层时（[7.2](/developers/chartset/vector-mbtiles/#7.2)），对 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`TSSLPT`、`TSSRON`、`TSSCRS` 的面这样选符号：
+
+  - `TSSLPT`：`ORIENT` 是 0–360 的数值时，写 `dh_symbol = "trafficLane:<ORIENT>"` 和数值字段 `ORIENT`，画成方向箭头；没有 `ORIENT` 或读不出时写 `caution`。
+  - `TSSRON` → `roundabout`；`TSSCRS` → `caution`。
+  - 其余各类按下列顺序取第一个成立的：
+    1. `RESTRN` 含 7、8、14 → `noEntry`；否则含 1、2 → `noAnchoring`；否则含 3、4、5、6 → `noFishing`。`RESTRN` 还有这一组以外的值时加 `+more`。
+    2. `RESTRN` 含 1–14 以外的值，或物标类是 `CTNARE`、`MIPARE`、`SPLARE`，或 `RESARE` 的 `CATREA` 含 1、8、9、12、14、19、25 → `caution`。
+    3. `ACHARE` → `anchorage`；`CBLARE` → `cable`；`MARCUL` → `farm`。
+    4. 其余（`RESARE`、`DMPGRD`、`PIPARE`）：`RESTRN` 含 9–13，或物标类是 `DMPGRD`、`PIPARE`，或 `CATREA` 含 4、5、6、7、10、18、20、22、23、24、27、28 → `information`；否则 `caution`。
 
   点放在哪里、一个区域放几个由生产方决定：App 不检查点的位置，也不把点和某个面对应起来，写一个点就画一个符号。App 自己生成这一层时这样放，生产方可照此放置：
 
@@ -34,8 +39,8 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   - 每个区域有一个锚点：区域最大一块的不可达极点（区域内离边界最远处），能做到时离航标本体和灯至少 60 米。10 级及更深的瓦片，不细长的区域都写锚点；细长的区域优先写下面的主轴中部站位，无法生成中部站位时才用锚点。
   - 细长的区域（最大一环的最小外接矩形，可旋转，长边至少是短边的 2 倍）沿主轴设固定站位：中部站位从 10 级起写入，不受下面的 12 pt 门槛限制。11 级起，从主轴中点向两侧按该级 115 pt 的间距设候选站位（一张瓦片按 512 pt 计），候选位置离主轴端部至少留该间距的四分之一；每深一级增加候选位置，原有候选位置不动，至 18 级为止，不再按当前级别把整条主轴等分。
   - 每个站位的点只按整个区域计算，不随瓦片或当前缩放重新选。中部站位取以主轴中点为中心的条带；条带宽度取首次能在两侧容纳候选站位那一级的 115 pt（至 18 级仍容纳不了则用 18 级），且不超过主轴长度的一半。其他站位的条带，以候选位置为中心，宽度为该候选位置首次纳入那一级的 115 pt。在条带与区域相交后最大的一块里选点，让它尽量远离区域边界和条带边缘；其他站位还避开相邻的、较浅级别纳入的候选站位，以到这些点的距离减去条带宽度四分之一，与到区域边界、条带边缘的距离一起取最小值，再找这个最小值最大的点。站位不按锚点的 60 米规则避让航标本体和灯。
-  - 除中部站位外，上述最小距离按显示级别换算后至少为 12 pt 才写入；某一级不够宽的站位，等到更深一级满足门槛时在同一位置加入，至 18 级仍不满足就不写。放大只增加站位，已生成的站位不换位置；实际画出的符号仍按上文避让文字和其他区域符号。
-  - 不细长的区域从 11 级起另在每一级固定的世界网格上加点，网格间距 200 pt，点离区域边界至少 16 pt、离锚点至少 100 pt；几个区域重叠处，一个网格点只写给其中一个区域。
+  - 除中部站位外，上述最小距离按显示级别换算后至少为 12 pt（`TSSLPT` 的方向箭头为 4 pt）才写入；某一级不够宽的站位，等到更深一级满足门槛时在同一位置加入，至 18 级仍不满足就不写。放大只增加站位，已生成的站位不换位置；实际画出的符号仍按上文避让文字和其他区域符号。
+  - 不细长的区域从 11 级起另在每一级固定的世界网格上加点，网格间距 200 pt，点离区域边界至少 16 pt（`TSSLPT` 的方向箭头为 8 pt）、离锚点至少 100 pt；几个区域重叠处，一个网格点只写给其中一个区域。
   - 最深一级的瓦片同时带更深各级（至 18 级）的点，各带 `dh_minzoom`。
   - 符号是 `caution` 的 `CTNARE`，在符号是 `noEntry`、`noAnchoring`、`noFishing`（含 `+more`）的 `RESARE` 以及 `ACHARE`、`CBLARE`、`MARCUL` 的范围内不放点。
   - 点只写在该级瓦片画出这个区域的地方；细长区域的站位若因轮廓简化略落在面外，距该瓦片所画区域的边界不超过 16 级网格的 24 个单位（该网格一张瓦片为 4096 个单位，换算到瓦片所在级别至少取 1 个单位）时也写入。同一张瓦片里相距不到 8 pt 的相同符号只写一个。
@@ -59,6 +64,9 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | `dh_drval1` | 浮点，米，可选 | 只在点状 `UWTROC`、`WRECKS`、`OBSTRN` 上：同一单元里包含或接触该点的 `DEPARE`、`DRGARE` 中最大的 `DRVAL1`，没有 `DRVAL1` 的水深区按 −1 计；没有这样的水深区就不写。 |
   | `dh_prev_valdco` | 浮点，米，可选 | 只在带 `VALDCO` 的 `DEPCNT` 上：同一单元里比它浅的 `DEPCNT` 中最大的 `VALDCO`，写 `max(更浅值, 0)`；没有更浅的写 `0`。 |
   | `dh_has_body` | 整数 `1`，可选 | 只在 `LIGHTS` 点上：同一单元里有与灯坐标完全相同的 `BOYSPP`、`BCNSPP`、`BOYSAW`、`BCNSAW`、`LITFLT`、`LITVES`、`BOYLAT`、`BCNLAT`、`BOYCAR`、`BCNCAR`、`BOYISD`、`BCNISD` 点时写 `1`；否则不写，不能仅凭附近有本体或 `FFPT` 关系写入。 |
+  | `dh_sectors` | 字符串，可选 | 只在 `LIGHTS` 点上：同一位置的扇区灯和定向灯合成一站时，全站的扇区和方向。App 转换 S-57 时，同一单元里坐标完全相同的扇区灯和定向灯记录（[5.1](/developers/chartset/data/#5.1) D 组）合成一站，全向灯不参与；按瓦片合站，只合并这张瓦片写入、`dh_minzoom` 相同（都不写也算相同）的记录，至少两条才成站；单独一条不写这些字段。站里第一条能写出灯质的记录（都写不出时取第一条）是主记录，写全站的编码；其余记录写 `hub`，地图上不画它们的扇区、圆点和灯质，准星仍读得到。编码每个扇区或方向一段，段间用 `;` 分隔：扇区 `s:<SECTR1>,<SECTR2>,<可见度>,<颜色>`，定向灯 `d:<ORIENT>,<可见度>,<颜色>`。度数为 0–360，照写 S-57 原值；可见度 `l` 正常，`f` 微弱（`LITVIS` 含 3 或 8），`o` 遮蔽（`LITVIS` 含 7，留空不画）；颜色 `3` 红、`4` 绿、`6` 黄（`COLOUR` 为 1、6、9、11 的都写 `6`），交替的两种颜色用 `+` 连接，留空画品红。例：`s:0,120,l,3;s:120,240,l,4;s:240,0,l,6`。整个值无法解析时，这盏灯不画扇区，画成以自身位置为中心的灯色圆点。 |
+  | `dh_light_label` | 字符串，可选 | 只在写了 `dh_sectors` 编码的主记录上：全站合并后的灯质，例如白、红、绿三个 `Fl 4s` 扇区合成 `Fl.WRG.4s`；与主记录自己的灯质相同时不写。地图在灯旁显示它，代替主记录自己的灯质。 |
+  | `dh_light_colour` | 字符串，可选 | 只在写了 `dh_sectors` 编码的主记录上：概览圆点的颜色，按 `COLOUR` 代码写。全站未遮蔽的扇区只有一种颜色时写 `3`、`4` 或 `6`，否则写 `multi`；与主记录自己 `COLOUR` 得出的圆点颜色相同时不写。地图用它代替 `COLOUR` 给圆点上色，`1`、`3`、`4`、`6` 以外的值画品红。 |
   | `dh_surface_cell` | 字符串，可选 | 数据的来源单元名。 |
   | `dh_surface_cscl` | 整数，可选 | 来源单元的编辑比例尺分母；与非空的 `dh_surface_cell` 一起提供时使用。 |
   | `dh_symbol` | 字符串 | 只在 `dh_area_symbol` 点上：画哪个区域符号（见上文）。 |
@@ -86,35 +94,38 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | --- | --- | --- | --- |
   | 7 | 6.5 起 | `DEPCNT` | 线，安全等深线和干出线（`VALDCO` 为 0）除外 |
   | 8 | 7.5 起 | `RESARE` `CTNARE` `ACHARE` `MIPARE` `DMPGRD` `SPLARE` `MARCUL` `CBLARE` `PIPARE` `ACHBRT` `PILBOP` `FSHFAC` `HRBARE` `SUBTLN` `OSPARE` `FSHGRD` `CTSARE` `ICNARE` `SNDWAV` `WEDKLP` | 边线 |
-  | 8 | 7.5 起 | `FAIRWY` `PRCARE` `TSSLPT` `DWRTPT` `ISTZNE` `TSSRON` `TSSCRS` `TWRTPT` `RCTLPT` `RECTRC` `FERYRT` | 边线 |
+  | 8 | 7.5 起 | `FAIRWY` `PRCARE` `DWRTPT` `ISTZNE` `TSSRON` `TSSCRS` `TWRTPT` `RCTLPT` `RECTRC` `FERYRT` | 边线 |
   | 8 | 7.5 起 | `TSEZNE` | 面 |
   | 8 | 7.5 起 | `TSELNE` `TSSBND` `DWRTCL` `RECTRC` `RCRTCL` `NAVLNE` `FERYRT` `MARCUL` `RDOCAL` | 线 |
   | 8 | 7.5 起 | `OBSTRN` `WRECKS` `UWTROC` | 画成孤立危险物的点（例外见表下） |
-  | 8 | — | `LIGHTS` | 点，画成灯色圆点；11.5–12 淡出，由灯光符号接替 |
+  | 8 | — | `LIGHTS` | 点，画成灯色圆点（`dh_sectors` 为 `hub` 的不画）；11.5–12 淡出，由灯光符号接替 |
   | 10 | — | `SEAARE` | 带 `CATSEA` 的名称 |
+  | 10.5 | 10 起 | `dh_area_symbol` | 带 `ORIENT` 的点，画成分道方向箭头（[4.2](/developers/chartset/tiles/#4.2)） |
   | 11 | 10.5 起 | `CBLSUB` `PIPSOL` | 线 |
-  | 11 | 10.5 起 | `dh_area_symbol` | 点，画成区域符号（[4.2](/developers/chartset/tiles/#4.2)） |
+  | 11 | 10.5 起 | `dh_area_symbol` | 其余的点，画成区域符号（[4.2](/developers/chartset/tiles/#4.2)） |
   | 11 | — | `SOUNDG` | 点，画成水深数字 |
   | 11 | — | `LNDRGN` `BUAARE` | 名称 |
   | 12 | 11.5 起 | `BOYLAT` `BCNLAT` `BOYCAR` `BCNCAR` `BOYISD` `BCNISD` `BOYSAW` `BCNSAW` `BOYSPP` `BCNSPP` `LITFLT` `LITVES` `TOPMAR` `LIGHTS` | 点：航标本体、顶标和灯光符号 |
+  | 12 | 11.5 起 | `LIGHTS` | 扇区灯和定向灯（[5.1](/developers/chartset/data/#5.1) D 组）画成扇区和方向线，代替灯光符号 |
   | 12 | 11.5 起 | `DAYMAR` `RTPBCN` `RADRFL` | 点 |
   | 12 | 11.5 起 | `OBSTRN` `WRECKS` `UWTROC` | 其余的点 |
   | 12 | 11.5 起 | `LNDMRK` `SILTNK` `OFSPLF` | 点 |
+  | 12 | 11.5 起 | `TS_FEB` `CURENT` | 点，画成流向箭头（[5.1](/developers/chartset/data/#5.1) A 组） |
   | 12 | — | `OBSTRN` `WRECKS` `UWTROC` | 点旁的水深（`VALSOU`），孤立危险物也是 |
-  | 12 | — | `LIGHTS` | 灯质 |
   | 12 | — | `SEAARE` | 其余名称 |
   | 12 | — | `ROADWY` `RAILWY` `LNDELV` `FNCLNE` `SLOTOP` `VEGATN` `TUNNEL` | 线 |
   | 13 | 12.5 起 | `MORFAC` `PYLONS` `WEDKLP` `WATTUR` `HRBFAC` `SMCFAC` `ACHARE` `ACHBRT` `FOGSIG` `CGUSTA` `PRDARE` `NEWOBJ` `SNDWAV` `PILBOP` `DMPGRD` `SISTAW` `SISTAT` | 点 |
-  | 13 | 12.5 起 | `RDOSTA` `RADSTA` `RDOCAL` `CRANES` `CTNARE` `SLCONS` `TS_FEB` `FORSTC` `AIRARE` `CTRPNT` `LNDELV` `SLOGRD` | 点 |
+  | 13 | 12.5 起 | `RDOSTA` `RADSTA` `RDOCAL` `CRANES` `CTNARE` `SLCONS` `FORSTC` `AIRARE` `CTRPNT` `LNDELV` `SLOGRD` | 点 |
   | 13 | — | `DEPCNT` | 等深线数值 |
-  | 13 | — | `ACHARE` `HRBFAC` `SMCFAC` | 名称 |
   | 14 | 13.5 起 | `BUISGL` `PILPNT` | 点 |
   | 15 | 14.5 起 | `SBDARE` | 点（底质） |
-  | 15 | — | `BERTHS`，航标本体（`BOYLAT` … `LITVES` 共 12 类） | 名称 |
+  | 15 | — | `ACHARE` `HRBFAC` `SMCFAC` `BERTHS`，航标本体（`BOYLAT` … `LITVES` 共 12 类） | 名称 |
+  | 15 | — | `TS_FEB` `CURENT` | 流速（`CURVEL`）或说明（`INFORM`） |
+  | 15 | — | `LIGHTS` | 灯质（主记录写了 `dh_light_label` 时显示它；`dh_sectors` 为 `hub` 的不画） |
 
   孤立危险物由 App 按用户设置的安全水深判定（S-52 的孤立危险物规则），与 `VALSOU`、`WATLEV`、`CATWRK`、`CATOBS` 和 `dh_drval1`（[4.2](/developers/chartset/tiles/#4.2)）有关。其中没有 `VALSOU`、没有 `dh_drval1`、`WATLEV` 未写或为 3 的，除 `CATWRK` 为 1、2、4、5 的 `WRECKS` 和 `CATOBS` 为 6 的 `OBSTRN` 外，也到 12 级才完全显示（11.5 起淡入）。
 - 表里没有的物标类和画法没有显示级别的限制，例如水深区 `DEPARE`、`DRGARE`（包括浅水图案），`LNDARE` 的面、线和点（小岛），岸线 `COALNE`，直线基线 `STSLNE`，安全等深线和干出线，架空的 `CBLOHD`、`PIPOHD`，`OBSTRN`、`WRECKS`、`UWTROC` 的面、边线和线，建筑物 `PYLONS`、`GATCON`、`OFSPLF` 的面和边线，陆上的 `SILTNK`、`LNDMRK`、`PRDARE`、`AIRARE` 的面和边线，`PONTON`、`FLODOC`、`GATCON`、`CONVYR`、`OILBAR`、`CANALS`、`RIVERS` 的线，以及 `TUNNEL` 的边线。
-- 文字（水深数字、名称、灯质、危险物旁的水深、等深线数值）和 `SBDARE` 底质会互相避让，放不下的不画。水深点只画成数字，数字被让掉时，那个水深点在这一级也点选不到。
+- 文字（水深数字、名称、灯质、危险物旁的水深、等深线数值、潮流和海流的流速或说明）和 `SBDARE` 底质会互相避让，放不下的不画。水深点只画成数字，数字被让掉时，那个水深点在这一级也点选不到。
 - 一类物标的每种画法都在表中时，`chart.mbtiles` 里比其中最早开始画出（有淡入的按开始淡入算）的缩放所在那一级更浅的级别，写进这类物标也不会画出、点选不到，可以不写。例如 `CBLSUB`、`PIPSOL` 10.5 起淡入：第 10 级瓦片里的在 10.5–11 之间淡入显示，第 9 级及更浅的不画。两处例外照常写：最深一级（`maxzoom`）在更深的缩放放大使用，`overview.mbtiles` 在深于 `overviewZoom` 的各级放大使用（[3.3](/developers/chartset/mbtiles/#3.3)）。`DEPCNT` 和 `OBSTRN`、`WRECKS`、`UWTROC` 还有不在表中的画法（安全等深线和干出线；面、边线和线），哪条是安全等深线、哪个点是孤立危险物又随用户设置的安全水深而变，所以浅级别也照常写。写进去的级别，仍按第一条带齐属性。
 - 用途带（S-57 INTU，1 概览 … 6 靠泊）不是瓦片字段。生产方自行决定每个缩放级别用哪个比例尺的数据，原则是**同一级别、同一位置只放一套数据**：两套重叠时两套都会显示，点选也可能报告两套。有概览瓦片集时，`chart.mbtiles` 与放大后的 `overview.mbtiles` 合起来算（[3.3](/developers/chartset/mbtiles/#3.3)）。
 - 某一级、某处既没有水深区面（`DEPARE`、`DRGARE` 的面）也没有陆地面时，下方的定海底图（海面、陆地与岸线）会透出；不要在这一级单独写陆地面（如 GSHHG 概览陆地），以免岸线不重合时出现两层岸线和夹在中间的杂色条。应在这一级写入真实的水深区面，或不写陆地面，整级交给定海底图。

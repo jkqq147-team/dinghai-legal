@@ -5,11 +5,10 @@ A reference producer for the DingHai chart set integration manual
 (https://dinghai.app/developers/chartset/), using only the Python
 standard library: it projects a few hand-written objects (depth areas,
 depth contours, soundings, a land area and its coastline, an anchorage, a
-lateral buoy with its light, a wreck, an area where anchoring is prohibited
-with its area identity (dh_area), and the two areas' symbol points
-(dh_area_symbol)) to Web Mercator, clips them per
-tile, encodes MVT 2.1, gzips each tile, and writes a plain MBTiles 1.3 file
-(`tiles` is a table) plus `manifest.json`.
+lateral buoy with its light, a wreck, an area where anchoring is prohibited,
+and the two areas' symbol points (dh_area_symbol)) to Web Mercator, clips
+them per tile, encodes MVT 2.1, gzips each tile, and writes a plain MBTiles
+1.3 file (`tiles` is a table) plus `manifest.json`.
 
 The output is deterministic: running it again with the same Python rewrites
 the same bytes. Across Python versions, the gzip header of a tile may
@@ -87,9 +86,6 @@ MEDIUM = ellipse(1000, 750)   # 5–10 m ring
 OUTER = rectangle(-1800, -1300, 1800, 1300)  # 10–20 m out to the edge
 ANCHORAGE = rectangle(1150, -1150, 1650, -750)
 NO_ANCHORING = rectangle(-1650, 750, -1150, 1150)
-# What names the no-anchoring area: the same string on every polygon of it,
-# in every tile and at every zoom, and on no other area of the chart set.
-NO_ANCHORING_AREA = "sample-no-anchoring"
 AREA_SYMBOLS = "dh_area_symbol"
 
 # Each feature: (layer, kind, geometry, attributes). kind is "polygon"
@@ -121,10 +117,9 @@ FEATURES: list[tuple[str, str, object, dict]] = [
     ("WRECKS", "point", to_lonlat(-750, 350),
      {"CATWRK": 2, "WATLEV": 3, "VALSOU": 6.5, "OBJNAM": "Sample Wreck",
       "INFORM": "Generated sample object."}),
-    # An area where anchoring is prohibited (RESTRN 1). Its polygon carries
-    # dh_area, so the whole area lights while the crosshair is inside it;
-    # its outline is a dh_boundary line, as the anchorage's.
-    ("RESARE", "polygon", [NO_ANCHORING], {"RESTRN": "1", "dh_area": NO_ANCHORING_AREA}),
+    # An area where anchoring is prohibited (RESTRN 1): its polygon, and
+    # its outline as a dh_boundary line, as the anchorage's.
+    ("RESARE", "polygon", [NO_ANCHORING], {"RESTRN": "1"}),
     ("RESARE", "line", NO_ANCHORING + NO_ANCHORING[:1], {"RESTRN": "1", "dh_boundary": 1}),
     # The areas' symbols: one point each, in a layer of their own, naming
     # the symbol to draw there.

@@ -24,10 +24,12 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `SOUNDG` | 点，**每个水深点一个点要素** | `DEPTH` | — |
 | `CANALS` `RIVERS` | 面、线 | — | — |
 | `DOCARE` `LOKBSN` `LAKARE` | 面 | — | — |
+| `TS_FEB` `CURENT` | 点 | — | `ORIENT`（流向箭头）；`TS_FEB` 的 `CAT_TS`（涨潮流的箭头样式，涨、落潮流的读数标题）；`CURVEL`（流速）；`INFORM`（没有 `CURVEL` 时显示的说明） |
 
 - `DEPARE` 缺上下限、`DRGARE` 缺下限，表示水深未知，不是实测安全水深。
 - `SOUNDG` 的水深写在派生字段 `DEPTH`（米），不是 S-57 的 3D 坐标；一个多点测深物标须拆成多个点要素，每点带自己的 `DEPTH`，id 规则见 [4.1](/developers/chartset/tiles/#4.1)。
 - 负值表示干出高度，不应由生产方改成绝对值。
+- `TS_FEB`（潮流）、`CURENT`（海流）：`ORIENT` 是 0–360 的数值时，地图画一支指向 `ORIENT` 的箭头（水流流去的方向，照写 S-57 原值），箭头方向固定在地图上；没有或读不出 `ORIENT` 时不画箭头。`TS_FEB` 的 `CAT_TS` 为 1（涨潮流）时箭尾带单侧短羽，`CURENT` 的箭尾带成对的羽，其余是无羽的箭头。点下方显示 `CURVEL` 加“kn”，没有 `CURVEL` 时显示 `INFORM` 全文。准星读数和详情的标题由类别、流向和流速组成，不用名称，例如“涨潮流 · 45° · 2.0 节”；没有 `CURVEL` 时，流速取 `INFORM` 里形如 `2 KN`、`1-2 KN` 的部分。
 
 **B. 陆地与岸线**
 
@@ -62,7 +64,7 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `LNDMRK` | 面、边线、点 | — | `CATLMK`（点的符号）；`CONVIS`（醒目） |
 | `SILTNK` | 面、边线、点 | — | `CATSIL`（点的符号）；`CONVIS`（醒目） |
 | `WATTUR` `FOGSIG` | 点 | — | — |
-| `CGUSTA` `NEWOBJ` `SISTAW` `SISTAT` `CRANES` `TS_FEB` `FORSTC` `CTRPNT` `SLOGRD` | 点 | — | — |
+| `CGUSTA` `NEWOBJ` `SISTAW` `SISTAT` `CRANES` `FORSTC` `CTRPNT` `SLOGRD` | 点 | — | — |
 
 **D. 航标**
 
@@ -70,19 +72,22 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | --- | --- | --- | --- |
 | `BOYLAT` `BCNLAT` `BOYCAR` `BCNCAR` `BOYISD` `BCNISD` `BOYSAW` `BCNSAW` `BOYSPP` `BCNSPP` `LITFLT` `LITVES` | 单点 Point | — | `BOYSHP`、`BCNSHP`（形状）；`CATLAM`、`CATCAM`（类别）；`COLOUR`、`COLPAT`（颜色）；`MARSYS`（浮标制度）；名称（标注） |
 | `TOPMAR` | 单点 Point | — | `TOPSHP`（形状）；`COLOUR`（颜色） |
-| `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质）；`dh_has_body`（灯光位置） |
+| `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质）；`SECTR1`、`SECTR2`（扇区）；`CATLIT` 含 1 或 16 并带 `ORIENT`（定向灯的方向线）；`LITVIS`（被遮蔽、微弱扇区的画法）；`dh_has_body`（灯光位置）；`dh_sectors`、`dh_light_label`、`dh_light_colour`（同位置扇区合成一站） |
 | `DAYMAR` `RTPBCN` `RADRFL` `RDOSTA` `RADSTA` | 点 | — | — |
 
 - 真实颜色已知时写 `COLOUR`。
 - 顶标、灯与浮标本体同位置时，分别写在各自的图层（`TOPMAR`、`LIGHTS`），与 S-57 一致。
 - 灯与本体同位置（条件见 [4.2](/developers/chartset/tiles/#4.2)）时，App 转换 S-57 会在 `LIGHTS` 点上写入 `dh_has_body = 1`，外部生产方可选择写入以将灯光画在本体灯头处，也可不写；缺少该字段时，灯画成以自身位置为中心的灯色圆点。
+- 扇区灯和定向灯：带 `SECTR1`、`SECTR2`（0–360，起止方位不同）的记录画成扇区；没有有效扇区、`CATLIT` 含 1 或 16 并带 `ORIENT`（0–360）的记录画成一条方向线。方位照写 S-57 原值（从海上看向灯的真方位）。`LITVIS` 含 7（遮蔽）的扇区留空不画，遮蔽的定向灯不画方向线；含 3 或 8（微弱、部分遮蔽）的画成虚线。扇区和方向线的颜色来自 `COLOUR`：红、绿各用本色，白、黄、橙、琥珀画成黄色；两种颜色交替的扇区分成内外两层；`COLOUR` 缺失、含其他颜色或超过两种颜色时画品红。其余 `LIGHTS` 记录是全向灯，照常画灯光符号。
+- 同一位置的多条扇区、定向记录，App 转换 S-57 时合成一站，在主记录上写 `dh_sectors`、`dh_light_label`、`dh_light_colour`（规则和编码见 [4.2](/developers/chartset/tiles/#4.2)），地图画一组扇区、一条合并的灯质。外部生产方可以照此写入，也可以不写；不写时每条记录各画各的扇区、概览圆点和灯质，同一位置的灯质不合并。
 - `DAYMAR`、`RTPBCN`、`RADRFL`、`RDOSTA`、`RADSTA` 与航标本体、灯或顶标坐标完全相同时，准星把它们读作这座航标的一部分（[5.2](/developers/chartset/data/#5.2)）。
 
 **E. 航路、限制区、管线**
 
 | 物标类 | 几何 | 必须 | 可选 |
 | --- | --- | --- | --- |
-| `FAIRWY` `PRCARE` `TSSLPT` `DWRTPT` `ISTZNE` `TSSRON` `TSSCRS` `TWRTPT` `RCTLPT` | 面、边线 | — | — |
+| `FAIRWY` `PRCARE` `DWRTPT` `ISTZNE` `TSSRON` `TSSCRS` `TWRTPT` `RCTLPT` | 面、边线 | — | `TSSRON`、`TSSCRS` 见表下 |
+| `TSSLPT` | 面 | — | `ORIENT`（方向箭头、准星方位读数）；见表下 |
 | `TSEZNE` | 面 | — | — |
 | `TSELNE` `TSSBND` `DWRTCL` `RCRTCL` `NAVLNE` | 线 | — | — |
 | `RECTRC` | 线、边线 | — | — |
@@ -95,8 +100,8 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `RDOCAL` | 线、点 | — | — |
 | `CBLSUB` `PIPSOL` `CBLOHD` `PIPOHD` | 线 | — | — |
 
-- 本组写“面”的类，除 `TSEZNE` 外面本身不画，看得见的是边线（[4.2](/developers/chartset/tiles/#4.2)）；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
-- `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面：`RESTRN`、`CATREA` 决定区域符号（规则见 [4.2](/developers/chartset/tiles/#4.2)），也决定准星“此处还有”里这个区域那一行的图标。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
+- 本组写“面”的类，除 `TSEZNE` 外面本身不画，看得见的是边线（[4.2](/developers/chartset/tiles/#4.2)）；`TSSLPT` 不画边线，看得见的只有它的方向箭头或区域符号；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
+- `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面：`RESTRN`、`CATREA` 决定区域符号；`TSSLPT` 的面：有 `ORIENT` 时是指向 `ORIENT` 的方向箭头，没有时是 `caution`；`TSSRON` 的面是 `roundabout`，`TSSCRS` 的面是 `caution`（规则见 [4.2](/developers/chartset/tiles/#4.2)）。区域符号也决定准星“此处还有”里这个区域那一行的图标。`TSSLPT` 有 `ORIENT` 时，准星读数和详情的标题是它的方位，例如“通航分道 · 306°”，不用名称。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
 - 本组写“面”的类：`RESTRN` 含禁止事项时，准星可由这个区域领先；准星“此处还有”里这个区域那一行带它的关键属性：`ACHARE` 的 `CATACH`、`MARCUL` 的 `CATMFA`、`FSHFAC` 的 `CATFIF`、`MIPARE` 的 `CATMPA`，没有时用 `RESTRN`；其他类先 `RESTRN`，再 `CATREA`（[5.2](/developers/chartset/data/#5.2)）。
 
 **F. 危险物**
@@ -120,7 +125,7 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 
 - **资格**：只报告 S-57 目录内的地理物标；元物标（`M_*`）、集合物标（`C_*`）、制图物标不报告。5.3 的七类仅源几何为面时是地表，其余有效地理物标可报告。`dh_boundary = 1` 的边线不读：面只经由它自己的面要素读到。
 - **读地图画出的**：准星只读当前缩放下地图实际画出的要素，用的就是画它时的属性；[4.4](/developers/chartset/tiles/#4.4) 的显示级别和文字避让都算在内。面只在地图用填色画它的级别读到：准星在面内，或在吸附范围内靠近它的边（这时以最近一条边上的点计位置）。只画了边线或名称的面读不到，下一条的类除外。
-- **限制区等区域**：[5.1](/developers/chartset/data/#5.1) E 组写“面”的各类虽然只画边线，地图从 8 级起另给它们一层透明填色（`TSEZNE` 用它自己的填色，见 [4.4](/developers/chartset/tiles/#4.4)），所以准星在面内或靠近它的边时同样读得到。
+- **限制区等区域**：[5.1](/developers/chartset/data/#5.1) E 组写“面”的各类虽然只画边线（`TSSLPT` 连边线也不画），地图从 8 级起另给它们一层透明填色（`TSEZNE` 用它自己的填色，见 [4.4](/developers/chartset/tiles/#4.4)），所以准星在面内或靠近它的边时同样读得到。
 - **禁止事项领先**：这些面的 `RESTRN` 含 1、3、5、7、9、11、13、14、15（禁止锚泊、禁止捕鱼、禁止拖网、禁止进入、禁止疏浚、禁止潜水、禁止兴波、避航区、禁止施工）且准星在面内时：如果没有锁定的点、线或航标，也没有包含准星的危险物（`OBSTRN`、`UWTROC`、`WRECKS`）面或架空物（`BRIDGE`、`CBLOHD`、`PIPOHD` 及带净空属性的物标）面，读数由这个区域领先，显示它禁止的事项和所在处的水深，例如“禁止锚泊　30–50米”，详情打开这个区域；否则它排在“此处还有”的最前面。
 - **航标的各部分**：坐标完全相同、并且都画出来了的航标本体、`LIGHTS`、`TOPMAR`、`DAYMAR`、`RTPBCN`、`RADRFL`、`RDOSTA`、`RADSTA` 点是同一座航标，准星把它们作为一个目标锁定和读出，各部分列在这座航标的详情里。
 - **属性**：除 `DEPARE` 面外，详情列出物标携带的、S-57 物标目录认识的全部属性，包括 `INFORM`、`NINFOM`、`TXTDSC`、`SORDAT`、`SORIND`、`SCAMIN`；目录外的键不列出，`dh_surface_cell`、`dh_surface_cscl`（来源）除外。`SOUNDG` 的 `DEPTH` 用于水深读数。
