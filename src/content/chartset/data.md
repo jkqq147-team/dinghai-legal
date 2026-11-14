@@ -111,7 +111,7 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `SNDWAV` | 面、边线、线、点 | — | 见表下 |
 | `ACHBRT` | 面、边线、点 | — | `OBJNAM`（锚位编号）；见表下 |
 | `ACHARE` | 面、边线、点 | — | 名称（标注）；见表下 |
-| `PILBOP` | 边线、点 | — | 见表下 |
+| `PILBOP` | 面、边线、点 | — | 见表下 |
 | `RDOCAL` | 线、点 | — | `ORIENT`（点的方向符号；`TRAFIC` 为 4 时画成双向）；`COMCHA`（频道） |
 | `CBLSUB` `PIPSOL` | 线 | — | — |
 | `CBLOHD` `PIPOHD` | 线 | — | 净空属性（见 C 组表下） |
@@ -120,7 +120,7 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 - `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`PRCARE`、`ISTZNE`、`OSPARE` 的面：`RESTRN`、`CATREA` 决定区域符号，`OSPARE` 的 `CATPRA` 只含 9 时是风电场符号；`TSSLPT` 的面：有 `ORIENT` 时是指向 `ORIENT` 的方向箭头，没有时是 `caution`；`TSSRON` 的面是 `roundabout`，`TSSCRS` 的面是 `caution`；`RCTLPT`、`DWRTPT`、`TWRTPT`、`FAIRWY`、`RECTRC` 的面：`ORIENT`、`TRAFIC` 决定单向或双向的方向箭头，缺了时画“?”（`DWRTPT` 画竖直的双向箭头，`FAIRWY` 不画）（规则见 [4.2](/developers/chartset/tiles/#4.2)）。区域符号也决定准星“此处还有”里这个区域那一行的图标。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
 - `TSSLPT`、`FAIRWY`、`DWRTPT`、`TWRTPT`、`RCTLPT`、`RECTRC`、`DWRTCL`、`RCRTCL`、`NAVLNE` 的 `ORIENT` 是 0–360 的数值时，准星读数和详情的标题是名称加方位；没有名称时，`TSSLPT` 用“通航分道”，其他类用物标类名，例如“通航分道 · 306°”“推荐航迹 · 270°”。
 - `RECTRC`、`DWRTCL`、`RCRTCL` 的线：`CATTRK` 为 1（依据固定标志）时画实线，否则画虚线。`TRAFIC` 为 1、2、3（单向）时沿线重复画单向箭头，**箭头指向线的数字化方向**（从第一个顶点到最后一个顶点），所以单向航线必须按通航方向数字化；`TRAFIC` 为 4（双向）时画双向箭头；没有 `TRAFIC` 或取其他值时画正立的“?”。App 转换 S-57 时，会把带 `ORIENT` 的单向线调成 `ORIENT` 所指的方向；按 manifest 导入的海图集和无 manifest 的矢量 MBTiles，App 照写入的顺序画，不调整。`ORIENT` 是 0–360 的数值时，沿线写方位，例如“270°”；`NAVLNE` 只在 `CATNAV` 为 1、2（避险线、叠标线）时写。
-- `SNDWAV` 的面另画沙波图案；`ACHBRT` 的面另在中央画锚位符号；`PILBOP` 写成面时，地图不画面本身，只在面的中央画引航员登船处符号。`ACHBRT` 有名称时，准星读数和详情的标题是“锚位”加名称，例如“锚位 W2”；`RDOCAL` 有 `COMCHA` 时，标题是名称（没有名称时用“无线电报告点”）加频道，例如“无线电报告点 · VHF 12”。显示级别见 [4.4](/developers/chartset/tiles/#4.4)。
+- `SNDWAV` 的面另画沙波图案；`ACHBRT` 的面另在中央画锚位符号；`PILBOP` 的面另在中央画引航员登船处符号。`ACHBRT` 有名称时，准星读数和详情的标题是“锚位”加名称，例如“锚位 W2”；`RDOCAL` 有 `COMCHA` 时，标题是名称（没有名称时用“无线电报告点”）加频道，例如“无线电报告点 · VHF 12”。显示级别见 [4.4](/developers/chartset/tiles/#4.4)。
 - 本组写“面”的类：`RESTRN` 含禁止事项时，准星可由这个区域领先；准星“此处还有”里这个区域那一行带它的关键属性：`ACHARE` 的 `CATACH`、`MARCUL` 的 `CATMFA`、`FSHFAC` 的 `CATFIF`、`MIPARE` 的 `CATMPA`，没有时用 `RESTRN`；其他类先 `RESTRN`，再 `CATREA`（[5.2](/developers/chartset/data/#5.2)）。
 
 **F. 危险物**
