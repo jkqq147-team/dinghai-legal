@@ -72,48 +72,63 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | --- | --- | --- | --- |
 | `BOYLAT` `BCNLAT` `BOYCAR` `BCNCAR` `BOYISD` `BCNISD` `BOYSAW` `BCNSAW` `BOYSPP` `BCNSPP` `LITFLT` `LITVES` | 单点 Point | — | `BOYSHP`、`BCNSHP`（形状）；`CATLAM`、`CATCAM`（类别）；`COLOUR`、`COLPAT`（颜色）；`MARSYS`（浮标制度）；名称（标注） |
 | `TOPMAR` | 单点 Point | — | `TOPSHP`（形状）；`COLOUR`（颜色） |
-| `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质）；`SECTR1`、`SECTR2`（扇区）；`CATLIT` 含 1 或 16 并带 `ORIENT`（定向灯的方向线）；`LITVIS`（被遮蔽、微弱扇区的画法）；`dh_has_body`（灯光位置）；`dh_sectors`、`dh_light_label`、`dh_light_colour`（同位置扇区合成一站） |
-| `DAYMAR` `RTPBCN` `RADRFL` `RDOSTA` `RADSTA` | 点 | — | — |
+| `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质）；`SECTR1`、`SECTR2`（扇区）；`CATLIT` 含 1 或 16 并带 `ORIENT`（定向灯的方向线）；`LITVIS`（被遮蔽、微弱扇区的画法）；`HEIGHT`、`VALNMR`（灯质后的灯高、射程）；`dh_has_body`（灯光位置）；`dh_sectors`、`dh_light_label`、`dh_light_colour`（同位置扇区合成一站） |
+| `DAYMAR` | 点 | — | `TOPSHP`（日标牌形状）；`COLOUR`（颜色） |
+| `RTPBCN` `RADRFL` `RDOSTA` `RADSTA` | 点 | — | — |
 
 - 真实颜色已知时写 `COLOUR`。
 - 顶标、灯与浮标本体同位置时，分别写在各自的图层（`TOPMAR`、`LIGHTS`），与 S-57 一致。
 - 灯与本体同位置（条件见 [4.2](/developers/chartset/tiles/#4.2)）时，App 转换 S-57 会在 `LIGHTS` 点上写入 `dh_has_body = 1`，外部生产方可选择写入以将灯光画在本体灯头处，也可不写；缺少该字段时，灯画成以自身位置为中心的灯色圆点。
 - 扇区灯和定向灯：带 `SECTR1`、`SECTR2`（0–360，起止方位不同）的记录画成扇区；没有有效扇区、`CATLIT` 含 1 或 16 并带 `ORIENT`（0–360）的记录画成一条方向线。方位照写 S-57 原值（从海上看向灯的真方位）。`LITVIS` 含 7（遮蔽）的扇区留空不画，遮蔽的定向灯不画方向线；含 3 或 8（微弱、部分遮蔽）的画成虚线。扇区和方向线的颜色来自 `COLOUR`：红、绿各用本色，白、黄、橙、琥珀画成黄色；两种颜色交替的扇区分成内外两层；`COLOUR` 缺失、含其他颜色或超过两种颜色时画品红。其余 `LIGHTS` 记录是全向灯，照常画灯光符号。
-- 同一位置的多条扇区、定向记录，App 转换 S-57 时合成一站，在主记录上写 `dh_sectors`、`dh_light_label`、`dh_light_colour`（规则和编码见 [4.2](/developers/chartset/tiles/#4.2)），地图画一组扇区、一条合并的灯质。外部生产方可以照此写入，也可以不写；不写时每条记录各画各的扇区、概览圆点和灯质，同一位置的灯质不合并。
+- 同一位置的多条扇区、定向记录，App 转换 S-57 时合成一站，在主记录上写 `dh_sectors`、`dh_light_label`、`dh_light_colour`（规则和编码见 [4.2](/developers/chartset/tiles/#4.2)），地图画一组扇区、一条合并的标注。外部生产方可以照此写入，也可以不写；不写时每条记录各画各的扇区、概览圆点和灯质，同一位置的灯质不合并。
 - `DAYMAR`、`RTPBCN`、`RADRFL`、`RDOSTA`、`RADSTA` 与航标本体、灯或顶标坐标完全相同时，准星把它们读作这座航标的一部分（[5.2](/developers/chartset/data/#5.2)）。
 
 **E. 航路、限制区、管线**
 
 | 物标类 | 几何 | 必须 | 可选 |
 | --- | --- | --- | --- |
-| `FAIRWY` `PRCARE` `DWRTPT` `ISTZNE` `TSSRON` `TSSCRS` `TWRTPT` `RCTLPT` | 面、边线 | — | `TSSRON`、`TSSCRS` 见表下 |
+| `FAIRWY` `DWRTPT` `TWRTPT` | 面、边线 | — | `ORIENT`、`TRAFIC`（方向箭头）；`ORIENT`（准星方位读数）；见表下 |
+| `RCTLPT` | 面、边线 | — | `ORIENT`（方向箭头、准星方位读数）；见表下 |
+| `PRCARE` `ISTZNE` `TSSRON` `TSSCRS` | 面、边线 | — | 见表下 |
 | `TSSLPT` | 面 | — | `ORIENT`（方向箭头、准星方位读数）；见表下 |
 | `TSEZNE` | 面 | — | — |
-| `TSELNE` `TSSBND` `DWRTCL` `RCRTCL` `NAVLNE` | 线 | — | — |
-| `RECTRC` | 线、边线 | — | — |
+| `TSELNE` `TSSBND` | 线 | — | — |
+| `DWRTCL` `RCRTCL` | 线 | — | `CATTRK`（实线或虚线）；`TRAFIC`（沿线的箭头或“?”）；`ORIENT`（沿线的方位、准星方位读数）；见表下 |
+| `RECTRC` | 线、面、边线 | — | 线：同 `DWRTCL`；面：`ORIENT`、`TRAFIC`（方向箭头），`ORIENT`（准星方位读数）；见表下 |
+| `NAVLNE` | 线 | — | `ORIENT`（准星方位读数；`CATNAV` 为 1、2 时沿线写方位） |
 | `FERYRT` | 线、面、边线 | — | — |
-| `RESARE` `MIPARE` `SPLARE` `CBLARE` `PIPARE` `FSHFAC` `HRBARE` `SUBTLN` `OSPARE` `FSHGRD` `CTSARE` `ICNARE` | 面、边线 | — | 见表下 |
-| `MARCUL` | 面、边线、线 | — | 见表下 |
-| `CTNARE` `DMPGRD` `SNDWAV` `WEDKLP` `ACHBRT` | 面、边线、点 | — | 见表下 |
+| `RESARE` `MIPARE` `SPLARE` `CBLARE` `PIPARE` `FSHFAC` `HRBARE` `SUBTLN` `FSHGRD` `CTSARE` `ICNARE` | 面、边线 | — | 见表下 |
+| `OSPARE` | 面、边线 | — | `CATPRA`（风电场符号）；见表下 |
+| `MARCUL` | 面、边线、线、点 | — | 见表下 |
+| `CTNARE` `DMPGRD` `WEDKLP` | 面、边线、点 | — | 见表下 |
+| `SNDWAV` | 面、边线、线、点 | — | 见表下 |
+| `ACHBRT` | 面、边线、点 | — | `OBJNAM`（锚位编号）；见表下 |
 | `ACHARE` | 面、边线、点 | — | 名称（标注）；见表下 |
-| `PILBOP` | 边线、点 | — | — |
-| `RDOCAL` | 线、点 | — | — |
+| `PILBOP` | 边线、点 | — | 见表下 |
+| `RDOCAL` | 线、点 | — | `ORIENT`（点的方向符号；`TRAFIC` 为 4 时画成双向）；`COMCHA`（频道） |
 | `CBLSUB` `PIPSOL` `CBLOHD` `PIPOHD` | 线 | — | — |
 
-- 本组写“面”的类，除 `TSEZNE` 外面本身不画，看得见的是边线（[4.2](/developers/chartset/tiles/#4.2)）；`TSSLPT` 不画边线，看得见的只有它的方向箭头或区域符号；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
-- `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE` 的面：`RESTRN`、`CATREA` 决定区域符号；`TSSLPT` 的面：有 `ORIENT` 时是指向 `ORIENT` 的方向箭头，没有时是 `caution`；`TSSRON` 的面是 `roundabout`，`TSSCRS` 的面是 `caution`（规则见 [4.2](/developers/chartset/tiles/#4.2)）。区域符号也决定准星“此处还有”里这个区域那一行的图标。`TSSLPT` 有 `ORIENT` 时，准星读数和详情的标题是它的方位，例如“通航分道 · 306°”，不用名称。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
+- 本组写“面”的类，除 `TSEZNE` 的填色和 `SNDWAV` 的沙波图案外，面本身不画，看得见的是边线（[4.2](/developers/chartset/tiles/#4.2)）；`TSSLPT` 不画边线，看得见的只有它的方向箭头或区域符号；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。
+- `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`PRCARE`、`ISTZNE`、`OSPARE` 的面：`RESTRN`、`CATREA` 决定区域符号，`OSPARE` 的 `CATPRA` 只含 9 时是风电场符号；`TSSLPT` 的面：有 `ORIENT` 时是指向 `ORIENT` 的方向箭头，没有时是 `caution`；`TSSRON` 的面是 `roundabout`，`TSSCRS` 的面是 `caution`；`RCTLPT`、`DWRTPT`、`TWRTPT`、`FAIRWY`、`RECTRC` 的面：`ORIENT`、`TRAFIC` 决定单向或双向的方向箭头，缺了时画“?”（`DWRTPT` 画竖直的双向箭头，`FAIRWY` 不画）（规则见 [4.2](/developers/chartset/tiles/#4.2)）。区域符号也决定准星“此处还有”里这个区域那一行的图标。海图集的区域符号要生产方写进 `dh_area_symbol`；无 manifest 的矢量 MBTiles 由 App 生成（[7.2](/developers/chartset/vector-mbtiles/#7.2)）。
+- `TSSLPT`、`FAIRWY`、`DWRTPT`、`TWRTPT`、`RCTLPT`、`RECTRC`、`DWRTCL`、`RCRTCL`、`NAVLNE` 的 `ORIENT` 是 0–360 的数值时，准星读数和详情的标题是名称加方位；没有名称时，`TSSLPT` 用“通航分道”，其他类用物标类名，例如“通航分道 · 306°”“推荐航迹 · 270°”。
+- `RECTRC`、`DWRTCL`、`RCRTCL` 的线：`CATTRK` 为 1（依据固定标志）时画实线，否则画虚线。`TRAFIC` 为 1、2、3（单向）时沿线重复画单向箭头，**箭头指向线的数字化方向**（从第一个顶点到最后一个顶点），所以单向航线必须按通航方向数字化；`TRAFIC` 为 4（双向）时画双向箭头；没有 `TRAFIC` 或取其他值时画正立的“?”。App 转换 S-57 时，会把带 `ORIENT` 的单向线调成 `ORIENT` 所指的方向；按 manifest 导入的海图集和无 manifest 的矢量 MBTiles，App 照写入的顺序画，不调整。`ORIENT` 是 0–360 的数值时，沿线写方位，例如“270°”；`NAVLNE` 只在 `CATNAV` 为 1、2（避险线、叠标线）时写。
+- `SNDWAV` 的面另画沙波图案；`ACHBRT` 的面另在中央画锚位符号；`PILBOP` 写成面时，地图不画面本身，只在面的中央画引航员登船处符号。`ACHBRT` 有名称时，准星读数和详情的标题是“锚位”加名称，例如“锚位 W2”；`RDOCAL` 有 `COMCHA` 时，标题是名称（没有名称时用“无线电报告点”）加频道，例如“无线电报告点 · VHF 12”。显示级别见 [4.4](/developers/chartset/tiles/#4.4)。
 - 本组写“面”的类：`RESTRN` 含禁止事项时，准星可由这个区域领先；准星“此处还有”里这个区域那一行带它的关键属性：`ACHARE` 的 `CATACH`、`MARCUL` 的 `CATMFA`、`FSHFAC` 的 `CATFIF`、`MIPARE` 的 `CATMPA`，没有时用 `RESTRN`；其他类先 `RESTRN`，再 `CATREA`（[5.2](/developers/chartset/data/#5.2)）。
 
 **F. 危险物**
 
 | 物标类 | 几何 | 必须 | 可选 |
 | --- | --- | --- | --- |
-| `WRECKS` | 面、边线、线、点 | — | `WATLEV`（水位）；`CATWRK`（符号）；`VALSOU`（水深）；点上 `dh_drval1`（周围水深） |
-| `OBSTRN` | 面、边线、线、点 | — | `WATLEV`（水位）；`CATOBS`（符号）；`VALSOU`（水深）；点上 `dh_drval1`（周围水深） |
+| `WRECKS` | 面、边线、线、点 | — | `WATLEV`（水位）；`CATWRK`（符号）；`VALSOU`（水深）；点上和面上 `dh_drval1`（周围水深） |
+| `OBSTRN` | 面、边线、线、点 | — | `WATLEV`（水位）；`CATOBS`（符号）；`VALSOU`（水深）；点上和面上 `dh_drval1`（周围水深）；面的画法见表下 |
 | `UWTROC` | 面、边线、线、点 | — | `WATLEV`（水位）；`VALSOU`（水深）；点上 `dh_drval1`（周围水深） |
-| `SBDARE` | 点 | — | `NATSUR`（底质；没有 `NATSUR` 时不显示） |
+| `SBDARE` | 面、边线、线、点 | — | `NATSUR`（点和面的底质；没有 `NATSUR` 时不写底质）；`WATLEV`（面的画法）；见表下 |
 
 提供 `VALSOU` 时用实际米制深度；周围水深的派生字段 `dh_drval1` 见 [4.2](/developers/chartset/tiles/#4.2)，不能把危险物本身的深度写成周围水域深度。
+
+- `OBSTRN`、`WRECKS` 的面也按孤立危险物规则判定，面状的也要写 `dh_drval1`：不写时按在安全水域里处理，可能在面的中央画出孤立危险物符号（[4.4](/developers/chartset/tiles/#4.4) 表下）。面的 `VALSOU` 写在面的中央，哪些写、哪些不写见 4.4 的表。
+- `OBSTRN` 的面：`CATOBS` 为 6（不良区）时面上画图案；`CATOBS` 为 7（不良底质）、8（拦冰栅）、10，或 `WATLEV` 为 7 时，边线不画危险物的点线，改画虚线，面的中央画符号；这些面不画成孤立危险物，也不写水深。
+- `SBDARE` 的面：`WATLEV` 为 3 或 4 时画细虚线边线；其中 `WATLEV` 为 4、`NATSUR` 为 9、11 或 14（岩、熔岩、珊瑚，单值）的面画礁石图案，其余在面的中央写底质。`SBDARE` 的线画细实线。
 
 **G. 名称**
 
