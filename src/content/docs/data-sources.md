@@ -1,9 +1,9 @@
 ---
 title: 数据源接入
-description: 在定海中添加 Signal K 或 NMEA 0183 TCP 数据源。
+description: 在定海中添加 Signal K、NMEA 0183 TCP 或 NMEA 0183 UDP 数据源。
 ---
 
-定海支持 Signal K 和 NMEA 0183 TCP 两种数据源，目前不支持只用 UDP 广播的网关。
+定海支持 Signal K、NMEA 0183 TCP 和 NMEA 0183 UDP 三种数据源。
 
 ## Signal K
 
@@ -13,9 +13,19 @@ description: 在定海中添加 Signal K 或 NMEA 0183 TCP 数据源。
 
 ## NMEA 0183 TCP
 
-打开“手动输入地址”，类型选“NMEA 0183”，填写网关或服务器的 `IP:端口`，再点“添加”。端口请查看设备说明书。
+打开“手动输入地址”，类型选“NMEA 0183 TCP”，填写网关或服务器的 `IP:端口`，再点“添加”。端口请查看设备说明书。
 
 signalk-server 的 NMEA 0183 TCP 输出默认使用 `10110` 端口（[官方源码](https://github.com/SignalK/signalk-server/blob/master/src/interfaces/nmea-tcp.ts)）；如果服务器改过端口，请填写实际端口。
+
+## NMEA 0183 UDP
+
+打开“手动输入地址”，类型选“NMEA 0183 UDP”，按下面的写法填写地址，再点“添加”。定海在这台设备的这个端口上接收数据，网关需与这台设备在同一网络。端口请查看设备说明书。
+
+- `网关IPv4:端口`：只收这个地址发来的数据；
+- `0.0.0.0:端口`：不限来源；
+- `组播地址:端口`：加入该组播。
+
+打开“数据源”时，定海会在 `10110` 和 `2000` 端口上接收广播：`10110` 是 [IANA 为 NMEA 0183 登记的端口](https://www.iana.org/assignments/service-names-port-numbers/)，`2000` 是 [Digital Yacht 网关发送 UDP 的端口](https://digitalyacht.support/tutorials/how-to-configure-apps-software/)。在这两个端口上发出 NMEA 0183 语句的网关会出现在“在这个网络上找到”中，点右侧的“＋”添加；定海不会自动添加或选用发现的网关。
 
 ## 选择使用的数据
 
@@ -23,4 +33,4 @@ signalk-server 的 NMEA 0183 TCP 输出默认使用 `10110` 端口（[官方源�
 
 ## 本地网络权限
 
-查找和连接船上本地网络中的数据源需要“本地网络”权限。如果此前拒绝了权限，请到系统“设置”中允许定海访问本地网络。
+查找船上本地网络中的数据源、连接或接收其数据需要“本地网络”权限。如果此前拒绝了权限，请到系统“设置”中允许定海访问本地网络。
