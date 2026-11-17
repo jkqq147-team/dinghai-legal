@@ -52,7 +52,7 @@ MANIFEST = {
     "tileProfile": PROFILE,
     "id": "example.org:minimal-sample",
     "name": "最小样例海图集",
-    "source": {"type": "external", "producer": "scripts/generate-chartset-sample.py 1"},
+    "source": {"type": "external", "producer": "generate-chartset-sample.py 1"},
     "minimumZoom": MIN_ZOOM,
     "maximumZoom": MAX_ZOOM,
     "createdAt": "2026-10-01T00:00:00Z",

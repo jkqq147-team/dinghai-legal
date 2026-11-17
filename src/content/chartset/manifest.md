@@ -18,7 +18,7 @@ UTF-8 编码的 JSON 对象。App 不认识的字段一律忽略。
   "name": "最小样例海图集",
   "source": {
     "type": "external",
-    "producer": "scripts/generate-chartset-sample.py 1"
+    "producer": "generate-chartset-sample.py 1"
   },
   "minimumZoom": 10,
   "maximumZoom": 16,
@@ -48,7 +48,7 @@ UTF-8 编码的 JSON 对象。App 不认识的字段一律忽略。
 | `bounds` | 对象 | `west`、`south`、`east`、`north`：数据覆盖范围的外包框，WGS84 经纬度（度）。经度在 −180…180，纬度在 −90…90，`south ≤ north`。另需 `west ≤ east`。 |
 | `minimumZoom`、`maximumZoom` | 整数 | `chart.mbtiles` 实际有瓦片的最浅、最深缩放级别，0–24，`minimumZoom ≤ maximumZoom`，与 metadata 的 `minzoom`、`maxzoom` 相同。 |
 | `overviewZoom` | 整数，可选（格式 1.1 起） | `overview.mbtiles` 唯一的那一级，`0 ≤ overviewZoom < maximumZoom`。写了就必须有 `overview.mbtiles`；不写就没有概览瓦片集（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
-| `createdAt` | 字符串 | 生成时间，ISO 8601 日期加时间和时区，推荐 UTC，例如 `2026-09-30T12:00:00Z`。 |
+| `createdAt` | 字符串 | 生成时间，RFC 3339 形式 `YYYY-MM-DDTHH:MM:SS`，可带小数秒，结尾是 `Z` 或 `±HH:MM`。秒不能省略，日期与时间之间用大写 `T`，不能用空格。推荐 UTC，例如 `2026-09-30T12:00:00Z`；也可写 `2026-09-30T12:00:00.123Z`、`2026-09-30T20:00:00+08:00`。 |
 
 这些字段与地图显示、读数的关系：
 

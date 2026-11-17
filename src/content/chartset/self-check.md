@@ -46,7 +46,7 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 | `tileProfile <值> unsupported, this App reads 1` | 剖面版本不受支持。 | 同上。 |
 | `missing field <路径>` | 缺必需字段，路径如 `source.producer`、`bounds.west`。 | 补上该字段（[2.2](/developers/chartset/manifest/#2.2)）。 |
 | `invalid field <路径>: …` | 字段类型或取值不对，例如 `tileProfile` 写成字符串 `"1"`、`converterRevision` 写成字符串；`source.type` 既不是 `external` 也不是 `s57` 时报 `invalid field source.type`。 | 按 [2.2](/developers/chartset/manifest/#2.2) 的类型改正；`source.type` 写 `external`。 |
-| `invalid field : Expected date string to be ISO8601-formatted.` | `createdAt` 不是带时间和时区的 ISO 8601，例如只写了日期（此项不带字段路径）。 | 写成 `2026-09-30T12:00:00Z` 的形式。 |
+| `invalid field : Expected date string to be ISO8601-formatted.` | `createdAt` 不符合 [2.2](/developers/chartset/manifest/#2.2) 的写法，例如只写了日期、省略了秒（`2026-09-30T12:00Z`）、日期与时间之间用空格，或没有时区（此项不带字段路径）。 | 写成 `2026-09-30T12:00:00Z` 的形式。 |
 | `invalid field name: empty` | `name` 是空串。 | 写显示名。 |
 | `invalid field minimumZoom: zoom range …` | 缩放不在 0–24，或 `minimumZoom > maximumZoom`。 | 按实际瓦片级别改正。 |
 | `invalid field overviewZoom: <值> not below maximumZoom <值>` | `overviewZoom` 不小于 `maximumZoom`，或是负数。 | 改成 `0 ≤ overviewZoom < maximumZoom`（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
