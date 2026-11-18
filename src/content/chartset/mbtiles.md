@@ -16,6 +16,8 @@ description: chart.mbtiles 与 overview.mbtiles 的 metadata 与 tiles 表。
 | `json` | `{"vector_layers":[…]}` | [MBTiles 1.3](https://github.com/mapbox/mbtiles-spec/blob/master/1.3/spec.md) 对矢量瓦片必需：每个 source-layer 一项，必需键只有 `id` 与 `fields`（字段名 → `String`、`Number` 或 `Boolean`）；每层的 `minzoom`、`maxzoom` 可选。 |
 | `name`、`type`（`overlay`）、`version`、`scheme`（`tms`）、`center` | | 按 MBTiles 1.3 填写。 |
 
+定海只读取海图集内的本地瓦片，不会为海图集联网取瓦片；metadata 的 `json` 值里即使带有 `tiles` 等远程瓦片地址，显示时也会忽略。
+
 ## 3.2 tiles
 
 - `tiles` 可以是表，也可以是视图，列为 `zoom_level`、`tile_column`、`tile_row`、`tile_data`。
