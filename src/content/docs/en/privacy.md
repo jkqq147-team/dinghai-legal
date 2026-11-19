@@ -5,7 +5,7 @@ description: DingHai Privacy Policy covering location data, anchor-watch records
 
 DingHai does not use advertising or third-party analytics services. You may choose to use a DingHai account with Sign in with Apple; local anchor watch requires no account and does not depend on DingHai servers.
 
-<p class="meta">Effective date: November 17, 2026</p>
+<p class="meta">Effective date: November 19, 2026</p>
 
 ## 1. Scope
 
@@ -40,8 +40,8 @@ Sign in with Apple is optional. After you sign in, DingHai servers process:
 
 - the user identifier Apple provides to DingHai, and an internal DingHai account identifier derived from it;
 - a device identifier, platform, and system-provided device display name;
-- hashes, expiry times, and revocation status for DingHai access and refresh sessions; and
-- an encrypted Apple refresh token used only to revoke Apple authorization when you delete the account.
+- hashes of DingHai session credentials, access-token expiry times, and session revocation status; and
+- an encrypted Apple refresh token used only to ask Apple to revoke authorization when you delete the account.
 
 DingHai does not request your name or email address from Apple when you sign in, and never asks for or stores your Apple ID password. DingHai session tokens on the device are stored in the Keychain.
 
@@ -96,7 +96,7 @@ You can delete tracks individually in the app. Signing out or deleting your Ding
 
 You can sign out or delete the DingHai account from the account screen. When you sign out, the server revokes this device's DingHai session, closes its live connection, and deletes its push token; the app then removes the anchor-watch records and photos belonging to that account from the current device, including records whose upload had started but not finished, except an anchor watch in progress on this device. The records on DingHai servers are unaffected and synchronize again when you sign back in.
 
-When you delete the account, DingHai servers clear the account's anchor-watch records (including any ongoing watch), position fixes, and photos, close all of its live connections, revoke Apple authorization, and delete the account, Apple identity link, devices, DingHai sessions, and push tokens. The app then removes the anchor-watch records and photos belonging to that account from the current device (except an anchor watch in progress on this device) and clears the DingHai session from the Keychain.
+When you delete the account, DingHai servers clear the account's anchor-watch records (including any ongoing watch), position fixes, and photos, close all of its live connections, ask Apple to revoke authorization, and delete the account, Apple identity link, devices, DingHai sessions, and push tokens; a failed request does not stop the deletion. The app then removes the anchor-watch records and photos belonging to that account from the current device (except an anchor watch in progress on this device) and clears the DingHai session from the Keychain.
 
 Once you are signed in with sync on, the app assigns anchor-watch records that were created on the device before you signed in, or while sync was off, and not yet uploaded, to the current account and uploads them. If you later sign out or delete the account, those records are handled together with the account's other records: account deletion deletes them from DingHai servers and the current device, and signing out removes them from the current device. Only anchor-watch records that have never been synchronized while signed in with sync on since they were created, and so belong to no account, are unaffected by signing out or deleting the account. Synchronized local copies on other devices are not automatically removed by account deletion.
 
@@ -110,7 +110,7 @@ This website uses no cookies, analytics, tracking pixels, or third-party fonts.
 
 ### Diagnostic Reports
 
-To investigate crashes, hangs, and overheating, DingHai automatically sends system-generated diagnostic reports (crash causes, where hangs occur, power usage and performance statistics, and the system version and device model) to DingHai's servers, along with the app version number, build number, and app identifier. Reports contain no account information, boat positions, or device identifiers, are not linked to your identity, and are not used for tracking. The server retains reports for 90 days; expired reports are deleted the next time a new report is received. Reports that have not been sent remain on this device for now and are sent again next time.
+To investigate crashes, hangs, and overheating, DingHai automatically sends system-generated diagnostic reports (crash causes, where hangs occur, power usage and performance statistics, and the system version and device model) to DingHai's servers, along with the app version number, build number, and app identifier. Reports contain no account information, boat positions, or device identifiers, are not linked to your identity, and are not used for tracking. Each time the server receives a new report, it deletes reports stored for more than 90 days. Reports that have not been sent remain on this device for now and are sent again next time.
 
 ## 9. Intended use
 
