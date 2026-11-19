@@ -9,9 +9,11 @@ Source of <https://dinghai.app/>: the DingHai app's privacy policy and support p
 Built with [Starlight](https://starlight.astro.build/) and deployed to GitHub Pages by GitHub Actions on every push to `main`. The site intentionally sets no cookies and loads no analytics, tracking, or third-party resources; search runs locally with Pagefind.
 
 ```sh
-npm ci          # Node and npm versions: .nvmrc, package.json
+npm ci          # install locked dependencies
 npm run dev     # live preview
-npm run check   # build + check that nothing loads from outside dinghai.app
+npm run check   # build + static scan for recognizable load URLs outside dinghai.app
 ```
+
+A passing check is not browser network verification.
 
 Rules for changing the site are in [AGENTS.md](AGENTS.md).

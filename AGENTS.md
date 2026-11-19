@@ -2,33 +2,28 @@
 
 Starlight (Astro) site, published to GitHub Pages by `.github/workflows/pages.yml`.
 
-## 目标
-
-- 对外法务文案与海图集接入手册只写当前已上线 App 与服务端能被实测或代码直接证实的事实；代码与手册不一致时以代码为准，无出处或无法证实的断言一律删除。
-
 ## Build and gate
 
-- Node and npm are pinned: `.nvmrc`, `package.json` `engines`/`packageManager`, `package-lock.json`. Install with `npm ci`.
+- CI selects Node from `.nvmrc`. `package.json` declares the Node and npm versions (`engines.node` and `packageManager`), and `package-lock.json` locks dependencies. Install with `npm ci`.
 - `npm run dev` previews while editing; `npm run build && npm run preview` serves the built `dist/`.
-- **Gate:** `npm run check` — builds, then `scripts/check-site.mjs` fails if anything in `dist/` loads from a host other than dinghai.app. CI runs the same command before deploying.
+- **Gate:** `npm run check` builds the site and statically checks `dist/` for recognizable load URLs outside dinghai.app. Passing is not browser network verification. CI runs the same command before deploying.
 
 ## URLs do not change
 
 - Chinese is the root locale, English lives under `/en/`. These must keep working at the same paths: `/`, `/privacy/`, `/support/`, `/en/`, `/en/privacy/`, `/en/support/`. The App links to `https://dinghai.app/privacy/`.
-- The chart set manual is Chinese only, under `/developers/chartset/` (`src/content/chartset/`). Its section anchors are the section numbers (`#1.1`, `#6.3`), set by `src/plugins/rehype-section-ids.mjs`; the App and the manual cite them. Import failures show a plain-language reason in the offline chart job row, without an error code or format-guide link; V3 and other diagnostics are recorded in device logs. Never rename a page slug or renumber a section.
+- The chart set manual is Chinese only and lives under `/developers/chartset/`. Keep published page paths and numbered section anchors (for example `#1.1` and `#6.3`) unchanged.
 - `public/CNAME` stays `dinghai.app`.
 
-## Legal pages are word for word
+## Public wording and evidence
 
 - `src/content/docs/{,en/}{privacy,support}.md` are legal and public wording. A layout change must not change one visible character: diff the visible text of every page before and after (extract plain text from both, compare block by block) and expect zero differences.
-- A wording change is a policy change: every sentence must match what the current App and servers actually do; claims about on-device layout or link visibility require on-device verification.
+- **用户定：** 对外法务／合规文案的措辞变更是政策变更；逐句用当前已上线版本的真机行为核实，涉及服务端的陈述同时核对当前部署的实际行为。代码、模拟器和编译通过不能代替真机证据。海图集接入手册对 App 校验与行为的陈述须能追溯到当前 App 实现，格式与校验以代码为准，报错码与用户可见文字照抄代码；涉及真机界面、链接或操作步骤的陈述须在该上线版本的真机上核实。无法证实的断言不发布。
 
 ## No third-party resources
 
 - No cookies, analytics, tracking, external fonts, CDNs, or embeds. Search is Starlight's local Pagefind. Outbound `<a>` links are fine; anything a page loads is not.
 
-## The manual follows the App code
+## Manual audience and downloads
 
-- Every sentence of the manual about what the App checks or does must be traceable to the current DingHai code (`apps/ios/DingHai/…`, e.g. `Core/ChartPackages/`, `Core/ChartSets/ChartSetManifest.swift`, `Features/MapLibrary/`). Error codes and the text users see are copied from the code. When code and manual disagree, the code wins; a sentence with no source is removed or made non-committal.
 - The manual is for external producers: no private repository paths, scripts, or simulator steps.
 - Downloads live in `public/developers/chartset/downloads/`. The sample ZIP must match what `generate-chartset-sample.py` writes: `manifest.json` byte for byte, every tile identical after gzip decoding.

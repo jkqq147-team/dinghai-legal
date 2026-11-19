@@ -1,14 +1,13 @@
-// Gate on the built site (dist/): nothing a page loads may come from anywhere
-// but dinghai.app. Checks every place a browser fetches from:
-//   HTML  src/href/srcset/poster/data/action on any tag except <a>, and
-//         <meta http-equiv="refresh">
-//   CSS   url(…) and @import, in .css files and inline <style>/style=""
+// Static gate on recognizable load URLs in the built site (dist/):
+//   HTML  src/href/srcset/poster/data/action/formaction (any quoting) and
+//         <meta http-equiv="refresh" content="…">
+//   CSS   url(…) and @import, in .css files, <style> and style attributes
 //   JS    import/import(), fetch(), new Worker(), importScripts(),
 //         sendBeacon(), XMLHttpRequest.open(), WebSocket/EventSource
 // Outbound <a href> links are navigation the reader chooses; they are listed
 // for review, not failed. Other absolute URLs inside scripts (translator
 // credits, `new URL(x, "https://example.com")` parsing bases) are not
-// requests; the browser network capture covers what actually loads.
+// requests. Passing this scan does not verify what the browser loads.
 //
 //   npm run check     (builds, then runs this)
 import { readdir, readFile } from 'node:fs/promises';
@@ -36,6 +35,10 @@ function offSite(url) {
 	}
 }
 
+const HTML_TAG = /<([a-z][^\s"'<>/=]*)(?=[\s/>])((?:[^"'<>]|"[^"]*"|'[^']*')*)>/gi;
+// Consume complete attributes so an apparent attribute inside quoted text is not scanned.
+const HTML_ATTR = /\s+([^\s"'<>/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+const HTML_LOAD_ATTRS = new Set(['src', 'href', 'srcset', 'poster', 'data', 'action', 'formaction']);
 const CSS_URL = /url\(\s*(['"]?)([^'")]+)\1\s*\)|@import\s+(['"])([^'"]+)\3/g;
 const JS_LOAD = [
 	/\bimport\s*\(\s*(['"`])([^'"`]+)\1/g,
@@ -74,22 +77,25 @@ for await (const path of files(ROOT)) {
 	if (file.endsWith('.html')) {
 		checked++;
 		const text = await readFile(path, 'utf8');
-		for (const [tag] of text.matchAll(/<[a-z][a-z0-9-]*\b[^>]*>/gi)) {
-			const name = tag.slice(1).split(/[\s>/]/)[0].toLowerCase();
-			for (const [, attr, value] of tag.matchAll(/\s(src|href|srcset|poster|data|action|formaction|content)="([^"]*)"/gi)) {
-				const key = attr.toLowerCase();
+		for (const [, tag, attrs] of text.matchAll(HTML_TAG)) {
+			const name = tag.toLowerCase();
+			const attributes = [...attrs.matchAll(HTML_ATTR)].map(([, key, double, single, bare]) => [key.toLowerCase(), double ?? single ?? bare]);
+			const refresh = name === 'meta' && attributes.some(([key, value]) => key === 'http-equiv' && value?.toLowerCase() === 'refresh');
+			for (const [key, value] of attributes) {
+				if (value === undefined) continue;
+				if (key === 'style') {
+					css(file, value);
+					continue;
+				}
+				// <meta content> is text unless it triggers a refresh redirect.
+				if (!HTML_LOAD_ATTRS.has(key) && !(key === 'content' && refresh)) continue;
 				if (name === 'a' && key === 'href') {
 					if (offSite(value)) links.set(value, (links.get(value) ?? new Set()).add(file));
 					continue;
 				}
-				// <meta content> is text (titles, descriptions, canonical/OG URLs of
-				// this site); only a refresh redirect makes the browser load it.
-				if (key === 'content' && !/http-equiv="refresh"/i.test(tag)) continue;
 				const urls = key === 'srcset' ? value.split(',').map((part) => part.trim().split(/\s+/)[0]) : [value.replace(/^\d+;\s*url=/i, '')];
 				for (const url of urls) if (offSite(url)) failures.push(`${file}: <${name} ${key}="${url}">`);
 			}
-			const style = /\sstyle="([^"]*)"/i.exec(tag);
-			if (style) css(file, style[1]);
 		}
 		for (const [, body] of text.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) css(file, body);
 		for (const [, body] of text.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) js(file, body);
@@ -106,8 +112,8 @@ console.log(`Checked ${checked} HTML, CSS and JS files in ${ROOT}/.`);
 console.log('Outbound links (navigation only, not loaded by the page):');
 for (const [url, pages] of [...links].sort()) console.log(`  ${url}  (${pages.size} page${pages.size > 1 ? 's' : ''})`);
 if (failures.length) {
-	console.error(`\n${failures.length} load(s) from other hosts:`);
+	console.error(`\n${failures.length} external load URL(s) detected by the static scan:`);
 	for (const failure of failures) console.error(`  ${failure}`);
 	process.exit(1);
 }
-console.log('\nNothing in dist/ loads from outside dinghai.app.');
+console.log('\nNo external load URLs detected by the static scan of dist/.');
