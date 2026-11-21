@@ -9,7 +9,7 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 
 接收两类输入：没有 manifest 的 `dh_profile=1` 瓦片集，以及用大写 S-57 物标类和属性的公开 MVT 剖面（本文称 `s57-acronym-mvt-v1`）。识别看实际 MVT 图层和属性，不看品牌、producer、generator 或文件名。有要素的图层中有任何一个不是 S-57 物标类（`dh_coverage`、`dh_area_symbol` 除外）时整包拒绝；OpenMapTiles、Shortbread、Protomaps 等底图不从这个入口安装。
 
-格式方面，以下任一项不满足即拒绝（V1）：metadata `format` 是矢量瓦片编码（例如 `pbf`）；写了 `dh_profile` 时等于 `1`；写了 `scheme` 时是 `tms`；写了 `projection` 时是 `EPSG:3857` 或 `3857`（不分大小写）；每层的 MVT 版本是 2；瓦片地址在 0–24 级的 Web Mercator/TMS 网格内；数据不跨 180° 经线、不越出经度范围。
+格式方面，以下任一项不满足即拒绝（V1）：metadata `format` 是矢量瓦片编码（例如 `pbf`）；写了 `dh_profile` 时等于 `1`；写了 `scheme` 时是 `tms`；写了 `projection` 时是 `EPSG:3857` 或 `3857`（不分大小写）；每层的 MVT 版本是 2；瓦片地址在 0–24 级的 Web Mercator/TMS 网格内；规范化后的地理物标顶点经度均在 −180° 至 180° 内。制作数据时请勿跨 180° 经线。
 
 除格式外只校验四项必要信息：
 
