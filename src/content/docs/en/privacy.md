@@ -52,7 +52,7 @@ The DingHai Basemap, satellite imagery, vector charts, and raster charts are rea
 
 - <strong>resources.dinghai.app:</strong> when you select sea areas, download the DingHai Basemap, satellite imagery, or the recommended tidal data, or check for their updates. When the introduction ends, if you allow location access and the DingHai Basemap for your sea area has not been downloaded, DingHai also asks it for the download size of that sea area.
 - <strong>charts.noaa.gov or [www.charts.noaa.gov](https://www.charts.noaa.gov):</strong> when you download NOAA charts.
-- <strong>The URL you enter and its redirect destinations:</strong> when you choose "Download from URL" for charts or tidal data.
+- <strong>The URL you enter and its redirect destinations:</strong> when you choose "Download from Address" for charts or tidal data.
 
 Checking or updating downloaded data also accesses the corresponding sources. Services receiving these requests can see network information such as your connection's public IP address, the resources requested, and request times, and the sea area you selected or are roughly in may be inferred from the resources requested; DingHai does not add your coordinates to these requests and does not attach DingHai account sign-in credentials or anchor-watch records.
 
