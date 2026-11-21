@@ -1,123 +1,127 @@
 ---
 title: Privacy Policy
-description: DingHai Privacy Policy covering location data, anchor-watch records and tracks, accounts and anchor-watch record sync, cross-device viewing and alert notifications, retention, and deletion.
+description: DingHai Privacy Policy covering what data the app handles, what it is used for, where it is stored, who can see it, and what you control.
 ---
 
 DingHai does not use advertising or third-party analytics services. You may choose to use a DingHai account with Sign in with Apple; local anchor watch requires no account and does not depend on DingHai servers.
 
-<p class="meta">Effective date: November 19, 2026</p>
+<p class="meta">Effective date: November 21, 2026</p>
 
 ## 1. Scope
 
 This policy applies to the DingHai app for iOS and iPadOS and to the privacy and support pages on this website.
 
-## 2. On-device location processing and anchor-watch records
+## 2. What data DingHai handles and why
 
-While anchor watch is active, DingHai processes your precise vessel position on your device to:
+- <strong>Location:</strong> During anchor watch, while you use the map in the foreground, and while you record a track, DingHai obtains the device's location (including precise location) according to the location permission you have granted, or uses the vessel position from the onboard data source you select. The position is used to place the anchor, calculate the distance to it, determine whether the boat is outside the alarm radius, draw tracks, and continue anchor watch on the Lock Screen or in the background and alert you to a potential anchor drag. Ending an anchor watch does not stop location still in use by the map or a track.
+- <strong>Anchor-watch records:</strong> Each anchor watch is saved as one record, including the anchor point, alarm radius, start and end times, the position fixes of the anchor-watch track and the watch status derived from them, your alarm acknowledgements, the identifier and name of the device that started the watch (which may be a vessel name in older records), and the record name and any photo you explicitly add. Records are used to view an anchor watch in progress and your anchor-watch history.
+- <strong>Tracks:</strong> Voyage tracks you explicitly record or import from a GPX file, used to show your tracks and track history.
+- <strong>Map marks:</strong> Marks you save or import from a GPX file, including their position, name, kind, and any note, used to show them on the map.
+- <strong>Search:</strong> Coordinates and map links you type or explicitly paste are parsed on the device; results you select are saved as recent searches.
+- <strong>Onboard data sources:</strong> After you add a Signal K or NMEA 0183 data source, DingHai receives onboard data from it, such as vessel position, heading, speed over ground, wind, and depth, for marine features including anchor watch. DingHai saves the data source's address, the name you set, and any Signal K username and password you enter; a vessel name reported by a Signal K data source is used on this device.
+- <strong>Account information:</strong> Sign in with Apple is optional. After you sign in, DingHai processes the user identifier Apple provides to DingHai and a DingHai account identifier derived from it, a device identifier, platform, and system-provided device name, sign-in session information, and an encrypted Apple authorization credential (used only to ask Apple to revoke authorization when you delete the account); when sync is on, this also includes the push token used to send alerts to this device. DingHai does not request your name or email address from Apple when you sign in, and never asks for or stores your Apple ID password.
+- <strong>Diagnostic reports:</strong> System-generated crash and performance reports used for troubleshooting; see Section 7.
 
-- place an anchor on the map and calculate the distance between the vessel and anchor;
-- determine whether the boat is outside the alarm radius;
-- draw the movement track for the current anchor watch; and
-- continue monitoring on the Lock Screen or in the background and alert you to a potential anchor drag.
+## 3. Where data is stored
 
-Anchor-watch records are stored on the device first, including the anchor point, the current and initial alarm radius, start and end times, the name of the device that started the watch (earlier versions recorded a vessel name), the time of the first interruption, and the time of the latest acknowledgement; the position fixes of the anchor-watch track (location, time, position source, accuracy, distance from the anchor, and the alarm radius at that time); the watch status derived from those positions (the two latest positions, the farthest distance from the anchor, the usual swing range, the first position of the first consecutive run outside the alarm radius, when the current run outside the alarm radius began, the number of position fixes, and how long this device's location coordinates have stayed unchanged); and the record name and photos you choose. Anchor-watch records, photos, and display preferences are kept in the app's local data container; DingHai does not synchronize these records through iCloud or CloudKit.
+### Your device
 
-After you sign in to a DingHai account with "Sync Anchor-Watch Records" turned on, anchor-watch records are uploaded to DingHai servers and synchronized to devices signed in to the same DingHai account, as described in Section 4.
+Location processing, distance decisions, and alarms for local anchor watch run on the device. Local anchor watch can continue when the account, network, or DingHai servers are unavailable.
 
-Local location processing, distance decisions, and alarms always run on the device. Local anchor watch continues when the account, network, or DingHai servers are unavailable.
+Anchor-watch records, photos, tracks, map marks, recent searches, data source settings, and display preferences are stored in the app's local data; Signal K usernames and passwords and DingHai sign-in credentials are stored in the device Keychain. DingHai does not sync anchor-watch records through iCloud or CloudKit. DingHai does not upload tracks, recent searches, or data source settings to DingHai servers or sync them through the DingHai account.
 
-When you use the map while the app is in the foreground, DingHai also obtains your current location according to the location permission you have granted. When you explicitly record a track using device location, track recording also requests continuous location updates. Ending an anchor watch ends that watch's need for location updates, but does not stop location updates still in use by the foreground map or track recording.
+### DingHai servers
 
-Only after you explicitly start track recording does DingHai save the positions, times, position sources, and accuracy along your route on the device, to show the track and your track history. Tracks currently remain on the device only; they are not uploaded to DingHai servers and are not included in account sync.
+DingHai servers run on Cloudflare. After you sign in, the servers store the account information listed in Section 2.
 
-Coordinates and map links you type or explicitly paste are parsed on the device. Search results you select are saved on the device as recent searches, including coordinates, source, and the time saved, and are not included in DingHai account sync. When these results are displayed, the map service in use still handles map requests as described in Section 5.
+When you're signed in and "Sync Anchor-Watch Records" is on (the default), anchor-watch records on this device that are assigned to the current account are uploaded to DingHai servers, including an anchor watch in progress and the position fixes of its track; record names, photos, and deletions are uploaded as well. These records are synchronized to other devices on the same account that have sync on. Anchor-watch records on this device that are not yet assigned to any account are assigned to the current account and uploaded. Anything that can't be uploaded yet stays on this device and is retried later. DingHai does not automatically remove anchor-watch records from its servers after a set period; you can remove them by deleting a record or deleting the account (see Section 6).
 
-If you enter the address of a Signal K or NMEA 0183 TCP data source on your boat in the app, DingHai connects to that address to receive onboard data such as vessel position, heading, speed over ground, wind, and depth for marine features including anchor watch. After you add an NMEA 0183 UDP data source, DingHai receives the onboard data a gateway broadcasts or multicasts to the port you entered on this device. Connecting to a service on your boat's local network requires the iOS Local Network permission. When Signal K is the position source, anchor-watch tracks and tracks record that position source. DingHai does not send your anchor-watch records, tracks, or DingHai account information to the Signal K service. Data source addresses, names you set, and the data source selection on this device are stored only on the device and are not included in DingHai account sync; vessel names reported by the server are used only on the device. The Signal K username and password you enter are stored in the device's Keychain and sent to the server you specified for authentication when connecting; they do not pass through DingHai servers. NMEA 0183 TCP and UDP sources only receive data and do not transmit onboard data. While “Data Sources” is open, DingHai looks for Signal K services on the local network and listens for broadcasts on common NMEA 0183 UDP ports to list gateways you can add. Each new anchor-watch record stores the name of the device that started the watch, and that name is synchronized with the record; in records created by earlier versions, this field may contain a vessel name.
+Diagnostic reports are also sent to DingHai servers (see Section 7). For troubleshooting, DingHai servers have Cloudflare's request logging turned on, which can record the time and URL of a request; the URL can contain a record or account identifier.
 
-## 3. DingHai accounts and authentication
+### Apple services
 
-Sign in with Apple is optional. After you sign in, DingHai servers process:
+- Device location, notifications, and Live Activities use Apple system services, including Core Location, UserNotifications, and ActivityKit.
+- Apple map styles use MapKit: when the Apple map is shown, DingHai requests the map of the area you view (including a search result you open) from Apple Maps services. When an anchor watch starts, DingHai sends the anchor coordinates to Apple Maps services to look up a nearby place name as the anchor-watch record's automatic name.
+- Account sign-in uses Sign in with Apple; cross-device alerts are sent through the Apple Push Notification service (APNs).
 
-- the user identifier Apple provides to DingHai, and an internal DingHai account identifier derived from it;
-- a device identifier, platform, and system-provided device display name;
-- hashes of DingHai session credentials, access-token expiry times, and session revocation status; and
-- an encrypted Apple refresh token used only to ask Apple to revoke authorization when you delete the account.
+Apple's own privacy policy applies to its processing through those services.
 
-DingHai does not request your name or email address from Apple when you sign in, and never asks for or stores your Apple ID password. DingHai session tokens on the device are stored in the Keychain.
+### Data downloads and onboard data sources
 
-## 4. Anchor-watch record sync, cross-device viewing, and alert notifications
+The DingHai Basemap, satellite imagery, vector charts, and raster charts are read and rendered on the device by MapLibre. To obtain this data and tidal data, DingHai connects to:
 
-When you're signed in and "Sync Anchor-Watch Records" is on (the default), an anchor watch started on this device is continuously uploaded to DingHai servers from start to end, including the record contents and position fixes listed above; record names, photos, and deletions are uploaded as well. Anything that can't be uploaded yet stays on this device and is retried later, and anchor-watch records started on this device while you were signed out are uploaded after you sign in. Each upload replaces the previous version of that record on the server, while position fixes are appended in order. Records stay on the server until you delete the record or the account.
+- <strong>resources.dinghai.app:</strong> when you select sea areas, download the DingHai Basemap, satellite imagery, or the recommended tidal data, or check for their updates. When the introduction ends, if you allow location access and the DingHai Basemap for your sea area has not been downloaded, DingHai also asks it for the download size of that sea area.
+- <strong>charts.noaa.gov or [www.charts.noaa.gov](https://www.charts.noaa.gov):</strong> when you download NOAA charts.
+- <strong>The URL you enter and its redirect destinations:</strong> when you choose "Download from URL" for charts or tidal data.
 
-The record name is an automatically generated place name or a name you enter, and photos are those you explicitly add to the record; the server also stores, with each record, the identifier of the device that started the anchor watch.
+Checking or updating downloaded data also accesses the corresponding sources. Services receiving these requests can see network information such as your connection's public IP address, the resources requested, and request times, and the sea area you selected or are roughly in may be inferred from the resources requested; DingHai does not add your coordinates to these requests and does not attach DingHai account sign-in credentials or anchor-watch records.
 
-Anchor-watch records and their photos are stored on Cloudflare services used by DingHai. When troubleshooting, the developer can view an account's anchor-watch records, position fixes, and photos.
+After you add an onboard data source, DingHai connects to the Signal K or NMEA 0183 address you enter, or receives gateway broadcasts on this device; when you open "Data Sources", DingHai also looks for data sources on the local network that you can add. When connecting, DingHai uses the Signal K username and password you enter to authenticate with the Signal K service you configured; they are not routed through DingHai servers. DingHai does not send your anchor-watch records, tracks, or DingHai account information to onboard data sources.
 
-Positions, alarm acknowledgements, alarm-radius changes, monitoring interruptions, and the end can be written only by the device that started the anchor watch; an anchor watch cannot be remotely controlled by, or handed off to, another device. After an anchor watch ends, devices on the same account can change the record name and photo or delete the record.
+## 4. Who can see this data
 
-Other devices on the same account with sync on receive these anchor-watch records over a live connection while the app is in the foreground, to view an anchor watch in progress and keep a copy of the record. That connection closes when the app goes to the background, sync is turned off, or the device signs out.
+- <strong>Your other devices:</strong> Other devices on the same account with sync on receive anchor-watch records while the app is in the foreground, to view an anchor watch in progress and keep a copy of the record; after an anchor watch ends, those devices can also change the record name and photo or delete the record.
+- <strong>The developer:</strong> Anchor-watch records and their photos are stored on Cloudflare services used by DingHai. When troubleshooting, the developer can view an account's anchor-watch records, position fixes, and photos.
+- <strong>Apple and Cloudflare:</strong> provide the system services and infrastructure services described in Section 3, respectively.
+- <strong>Data sources and onboard data sources:</strong> Data sources and the services to which they redirect receive the network request information described in Section 3; Signal K servers you add receive connection requests and any login credentials you enter for those servers.
 
-While an anchor watch is in progress, DingHai servers send two kinds of alerts through the Apple Push Notification service (APNs). The server sends an outside-the-alarm-radius alert when two consecutive positions outside the alarm radius are newly formed and both positions are still recent enough when received; it does not repeat the alert for every position while the boat stays outside the alarm radius. The server starts or updates the 5-minute timer after receiving a sufficiently recent anchor-watch start or position, and sends a position-lost alert when a watch with previously established timely contact has received no new timely position for about 5 minutes. A late-arriving old position doesn't trigger an alert or restart the 5-minute timer. Alerts are sent to other devices on the same account that still have a valid sign-in session and push registration, not to the device that started the anchor watch. When a record name is available, the alert title contains the name of the device that started the watch and the record name; otherwise, it contains only the name of the device that started the watch (which may be a vessel name for watches started in earlier versions).
-For this purpose the server stores those devices' APNs push tokens and push environment. When you turn sync off or sign out, the app asks the server to delete that device's push token; the server also deletes the token when the account is deleted or APNs reports the token as no longer valid. If the request to delete the push registration fails, or the server has already sent an alert, you may still receive alerts after turning sync off. Notifications are a supplementary feature and may be delayed or lost; DingHai does not guarantee delivery, and they must not replace the local alarm on the device aboard.
-
-You can turn off "Sync Anchor-Watch Records" on the app's account screen. When "Sync Anchor-Watch Records" is off, this device stops uploading and downloading anchor-watch records and asks the server to remove its push registration. No records are deleted; anything not yet uploaded stays on this device and is uploaded after you turn sync back on, and anchor watch on this device continues as usual. Copies already on your other devices stop being updated. If this device is running an anchor watch and the server has previously received a timely start or position for that watch, about 5 minutes after the last valid contact, the server may send a position-lost alert to other devices on the same account that have completed push registration.
-
-Anchor-watch data is not used for advertising, profiling, or cross-app tracking. Tracks are not part of this sync.
-
-## 5. Apple and infrastructure services
-
-Apple map styles use MapKit; the DingHai Basemap (global overview and downloaded sea areas), satellite imagery (its global overview and the imagery of downloaded sea areas), vector charts, and raster charts are read and rendered on the device by MapLibre. The app includes a low-detail global overview of the DingHai Basemap that can be rendered without any download. When you select sea areas, download the DingHai Basemap or satellite imagery, or check for DingHai Basemap or satellite imagery updates, DingHai fetches the corresponding manifest and required indexes from resources.dinghai.app, and fetches the corresponding overview or regional resource files when downloading. The introduction plays from illustrative data included in the app; while it plays it does not read your location and connects to no server. When it ends, if you allow location and the DingHai Basemap for your waters is not yet downloaded, DingHai asks resources.dinghai.app for the size of that download. What it requests is the index partition containing your position, one of which covers a stretch of sea 22.5° of longitude wide; the server therefore learns roughly which stretch you are in, but receives neither your coordinates nor which cell of it you are in.
-
-When you download NOAA charts, DingHai connects directly to charts.noaa.gov or [www.charts.noaa.gov](https://www.charts.noaa.gov). When you download the recommended Slackwater tidal data or check for a new version, DingHai fetches tidal data release information (tides/manifest.json) from resources.dinghai.app and downloads tidal data files from the same domain. When you choose "Download from URL" for charts or tidal data, DingHai connects to the URL you enter and its redirect destinations; checking or updating downloaded data also accesses the corresponding sources. Services receiving these requests can see network information such as your connection's public IP address, the resources requested, and request times; the selected sea area may be inferred from the resource requests. These download requests do not include DingHai account session tokens or anchor-watch records.
-
-Device location, notifications, and Live Activities use Apple system services, including Core Location, UserNotifications, and ActivityKit.
-When an anchor watch starts, DingHai sends the anchor coordinates to Apple Maps services to look up a nearby place name as the anchor-watch record's automatic name. Cross-device alerts are sent through APNs. Apple's own privacy policy applies to its processing through those services.
-
-DingHai uses Cloudflare Workers, D1, R2, and Durable Objects to provide accounts, anchor-watch record sync, and alert notifications: D1 stores accounts, identity links, devices, sessions, and push tokens; one Durable Object per account stores that account's anchor-watch records and position fixes; and R2 stores anchor-watch photos. DingHai includes no advertising SDKs or third-party analytics SDKs.
-
-## 6. Permissions
-
-- <strong>Location while using the app:</strong> shows the vessel position, places the anchor, calculates distance, or records a track you explicitly start. Track recording needs only this permission; once started, it continues while locked or in another app and does not require Always.
-- <strong>Always and precise location:</strong> continues anchor watch while locked, in another app, or when iOS wakes the app for a location condition.
-- <strong>Notifications:</strong> alerts you when an anchor-drag risk is detected on this device; after you sign in with sync on, also shows outside-the-alarm-radius alerts and position-lost alerts (no new position for about 5 minutes) about anchor watches on the account's other devices (see Section 4).
-- <strong>Local Network:</strong> finds Signal K data sources and gateways broadcasting NMEA 0183, and receives onboard data from the Signal K, NMEA 0183 TCP or UDP sources you add.
-
-DingHai does not request microphone, camera, or contacts access and does not record audio. Only photos you explicitly choose through the system photo picker are added to anchor-watch records; photos are resized to smaller dimensions and saved again as JPEG, without copying location or other metadata from the originals.
-
-## 7. Retention, deletion, and control
-
-Ended anchor-watch records remain until you delete them individually in the app. On other devices, an anchor watch with no end can be shown as "unfinished" after more than 7 days without a new position (counted from the start if no position has been received).
-The device that started the watch still restores its newest local watch with no end, regardless of age, and excludes it from the logbook. The app currently offers no option to delete an anchor-watch record without an end.
-When you delete a synchronized record, the server deletes that record's contents, position fixes, and photos and keeps only a deletion marker with no anchor-watch content, so that the account's other devices delete their copies. A record deleted while sync is off is deleted from the server after sync is turned back on.
-
-Deleting the app removes the anchor-watch records, photos, and tracks in the app's data on that device, including records not yet uploaded; anchor-watch records already uploaded to your DingHai account remain on DingHai servers and synchronize to the device again after reinstallation once you sign in to the same account with sync on.
-
-You can delete tracks individually in the app. Signing out or deleting your DingHai account does not delete tracks on the device. You can delete individual recent searches or clear them all on the search screen.
-
-You can sign out or delete the DingHai account from the account screen. When you sign out, the server revokes this device's DingHai session, closes its live connection, and deletes its push token; the app then removes the anchor-watch records and photos belonging to that account from the current device, including records whose upload had started but not finished, except an anchor watch in progress on this device. The records on DingHai servers are unaffected and synchronize again when you sign back in.
-
-When you delete the account, DingHai servers clear the account's anchor-watch records (including any ongoing watch), position fixes, and photos, close all of its live connections, ask Apple to revoke authorization, and delete the account, Apple identity link, devices, DingHai sessions, and push tokens; a failed request does not stop the deletion. The app then removes the anchor-watch records and photos belonging to that account from the current device (except an anchor watch in progress on this device) and clears the DingHai session from the Keychain.
-
-Once you are signed in with sync on, the app assigns anchor-watch records that were created on the device before you signed in, or while sync was off, and not yet uploaded, to the current account and uploads them. If you later sign out or delete the account, those records are handled together with the account's other records: account deletion deletes them from DingHai servers and the current device, and signing out removes them from the current device. Only anchor-watch records that have never been synchronized while signed in with sync on since they were created, and so belong to no account, are unaffected by signing out or deleting the account. Synchronized local copies on other devices are not automatically removed by account deletion.
-
-You can revoke location or notification access at any time in Settings. Revoking a permission required for anchor watch will stop the corresponding protection.
-
-## 8. Use and sharing
-
-DingHai processes the data described above only to provide local anchor watch, track recording, maps and charts, tidal data, onboard data connections, accounts, anchor-watch record sync, cross-device viewing and alert notifications, security, and support. DingHai does not sell personal data or share it with advertising, analytics, or data-broker services. Apple and Cloudflare provide the relevant system and infrastructure services, respectively. When you use the data downloads described in Section 5, the data sources and services to which they redirect receive the network request information described in that section. Signal K servers you add receive connection requests and any login credentials you enter for those servers. DingHai does not send your anchor-watch records, tracks, or DingHai account session tokens to those services for these data downloads or onboard data connections.
+DingHai processes the data described above only to provide local anchor watch, track recording, maps and charts, tidal data, onboard data connections, accounts, anchor-watch record sync, cross-device viewing and alert notifications, security, and support. DingHai does not sell personal data or share it with advertising, analytics, or data-broker services; it includes no advertising SDKs or third-party analytics SDKs; and anchor-watch data is not used for advertising, profiling, or cross-app tracking.
 
 This website uses no cookies, analytics, tracking pixels, or third-party fonts.
 
-### Diagnostic Reports
+## 5. Cross-device alerts
 
-To investigate crashes, hangs, and overheating, DingHai automatically sends system-generated diagnostic reports (crash causes, where hangs occur, power usage and performance statistics, and the system version and device model) to DingHai's servers, along with the app version number, build number, and app identifier. Reports contain no account information, boat positions, or device identifiers, are not linked to your identity, and are not used for tracking. Each time the server receives a new report, it deletes reports stored for more than 90 days. Reports that have not been sent remain on this device for now and are sent again next time.
+When you're signed in with sync on, DingHai servers use the uploaded positions and, on finding that an anchor watch in progress has gone outside the alarm radius or that no position has been received for some time, may send alerts through APNs to other devices on the same account that are registered for push. The alert title contains the name of the device that started the watch, and the record name when there is one. For this purpose the servers store those devices' push tokens.
 
-## 9. Intended use
+Notifications are a supplementary feature and may be delayed or lost; DingHai does not guarantee delivery, and they must not replace the local alarm on the device aboard.
+
+## 6. What you control
+
+### Permissions
+
+- <strong>Location while using the app:</strong> shows the vessel position, places the anchor, calculates distance, or records a track you explicitly start. Once started, track recording continues while locked or in another app.
+- <strong>Always and precise location:</strong> continues anchor watch while locked, in another app, or when iOS wakes the app for a location condition.
+- <strong>Notifications:</strong> alerts you when an anchor-drag risk is detected on this device; after you sign in with sync on, also shows alerts about anchor watches on the account's other devices (see Section 5).
+- <strong>Local Network:</strong> finds Signal K data sources and gateways broadcasting NMEA 0183, and receives onboard data from the Signal K, NMEA 0183 TCP or UDP sources you add.
+
+DingHai does not request microphone, camera, or contacts access and does not record audio. Only photos you explicitly choose through the system photo picker are added to anchor-watch records; photos are saved again as JPEG within a size limit, without copying location or other metadata from the originals.
+
+You can revoke location or notification access in Settings. Revoking a permission required for anchor watch will stop the corresponding protection.
+
+### The sync switch
+
+You can turn off "Sync Anchor-Watch Records" on the app's account screen. When it is off, this device stops uploading and downloading anchor-watch records and asks the server to delete its push token. No records are deleted; anything not yet uploaded stays on this device and is uploaded after you turn sync back on, and anchor watch on this device continues as usual. Records already on the servers and sync among the account's other devices are unaffected. After it is off, this device may still receive alerts already sent or sent before its push token is deleted; if it is running an anchor watch, other devices on the same account may receive a position-lost alert about it.
+
+### Deleting records
+
+Only ended anchor-watch records can be deleted individually in the app. When you delete a synchronized record, the server deletes that record's contents, position fixes, and photos and keeps only a deletion marker with no anchor-watch content, so that the account's other devices delete their copies. A deletion made while sync is off is submitted to the server only once this device resumes sync for the same account; if you sign out before it is submitted, the deletion does not reach the server.
+
+You can delete tracks individually in the app, and delete individual recent searches or clear them all on the search screen.
+
+### Signing out
+
+You can sign out from the app's account screen. When you sign out, the server revokes this device's sign-in and deletes its push token; the app then removes the anchor-watch records and photos belonging to that account from this device, including records not yet fully uploaded, except an anchor watch in progress on this device. The records on DingHai servers are unaffected and synchronize again when you sign back in.
+
+### Deleting the account
+
+You can delete the DingHai account from the app's account screen. When you delete the account, DingHai servers delete the account's anchor-watch records (including any anchor watch in progress), position fixes, and photos, delete the account, Apple identity link, devices, sign-in sessions, and push tokens, and ask Apple to revoke authorization. The app then removes the anchor-watch records and photos belonging to that account from this device (except an anchor watch in progress on this device) and clears the DingHai sign-in credentials from the Keychain. Synchronized local copies on other devices are not automatically removed by account deletion.
+
+Once you are signed in with sync on, anchor-watch records on this device that are not yet assigned to any account are assigned to the current account; anchor-watch records on this device that are not assigned to any account are unaffected by signing out or deleting the account. Signing out or deleting the account does not delete tracks on the device.
+
+### Deleting the app
+
+Deleting the app removes data stored within the app, including anchor-watch records not yet uploaded; it does not delete records already uploaded to DingHai servers, and after reinstallation, they synchronize to the device again once you sign in to the same account with sync on. To remove them from the servers, delete the records or delete the account.
+
+## 7. Diagnostic reports
+
+To investigate crashes, hangs, and overheating, DingHai first saves system-generated diagnostic reports (crash causes, where hangs occur, power usage and performance statistics, and the system version and device model) on this device, then attempts to send them automatically to DingHai's servers, along with the app version number, build number, and app identifier. DingHai does not attach account information, boat positions, or device identifiers to the reports, does not link them to your identity, and does not use them for tracking. Each time the server receives a new report, it deletes reports stored for more than 90 days.
+
+## 8. Intended use
 
 DingHai is an anchor-watch aid. It does not provide emergency rescue or vessel control and cannot replace
 safe anchoring procedures, a human watch, or compliant marine equipment. Always maintain independent safety measures.
 
-## 10. Updates and contact
+## 9. Updates and contact
 
 If our data practices materially change, we will update this policy, this effective date, and the App Store Privacy Nutrition Label together, and provide an in-app notice when appropriate.
 
