@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { unified } from '@astrojs/markdown-remark';
 import { rehypeSectionIds } from './src/plugins/rehype-section-ids.mjs';
 
 // Every page is self-contained: no external fonts, CDNs, or analytics.
@@ -9,10 +10,12 @@ export default defineConfig({
 	site: 'https://dinghai.app',
 	trailingSlash: 'always',
 	markdown: {
-		// Legal pages are copied word for word: no typographic quote rewriting.
-		smartypants: false,
-		// Manual headings keep their section numbers as ids (`#6.3`).
-		rehypePlugins: [rehypeSectionIds],
+		processor: unified({
+			// Legal pages are copied word for word: no typographic quote rewriting.
+			smartypants: false,
+			// Manual headings keep their section numbers as ids (`#6.3`).
+			rehypePlugins: [rehypeSectionIds],
+		}),
 	},
 	integrations: [
 		starlight({
