@@ -27,6 +27,7 @@ description: 附录，不属于海图集格式：没有 manifest 的单份矢量
 ## 7.2 一次单向规范化
 
 - 安装前只转换一次，不修改原文件；已经安装的不再转换，要得到新版 App 生成的内容，重新导入原文件；边线须符合 [4.3](/developers/chartset/tiles/#4.3) 的要求。输出是一个海图集：`manifest.json`（`external`、`tileProfile 1`）、`chart.mbtiles`（`dh_profile=1`、gzip MVT、TMS）和 `vector-import.json`（识别结果与缺少的可选信息）。
+- 含多个点的 Point 要素拆成每点一个要素，各带拆分前的全部属性。原要素的 `id` 若保留，拆出的点共用这个 `id`，一次点选只报告其中一个（[4.1](/developers/chartset/tiles/#4.1)）。多点 `SOUNDG` 不拆，按 [7.1](#7.1) 的逐点测深要求拒绝。
 - 输入里没有 `dh_area_symbol` 层时，App 为它生成区域符号（[4.2](/developers/chartset/tiles/#4.2)）：取最深一级瓦片中 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`PRCARE`、`ISTZNE`、`OSPARE`、`TSSLPT`、`TSSRON`、`TSSCRS`、`DWRTPT`、`TWRTPT`、`RCTLPT`、`FAIRWY`、`RECTRC` 的面，同类、属性相同的面合并后每个连通的部分算一个区域，按 4.2 的规则选符号、放点，写进 10 级起的瓦片。输入里已有 `dh_area_symbol` 层时，这一层原样保留。
 - 规范化通过后显示“导入海图”确认页；点“取消”不安装。
 - 输出的缩放与范围来自实际数据；`id` 取输入内容的指纹，同样的内容再导入替换前一次导入（[2.3](/developers/chartset/manifest/#2.3)）；`createdAt` 是本次生成时间，不是测绘日期。

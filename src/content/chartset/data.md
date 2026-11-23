@@ -81,7 +81,7 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `TOPMAR` | 单点 Point | — | `TOPSHP`（形状）；`COLOUR`（颜色） |
 | `LIGHTS` | 单点 Point | — | `COLOUR`（颜色）；`LITCHR`、`SIGGRP`、`SIGPER`（灯质）；`SECTR1`、`SECTR2`（扇区）；`CATLIT` 含 1 或 16 并带 `ORIENT`（定向灯的方向线）；`LITVIS`（被遮蔽、微弱扇区的画法）；`HEIGHT`、`VALNMR`（灯质后的灯高、射程）；`dh_has_body`（灯光位置）；`dh_sectors`、`dh_light_label`、`dh_light_colour`（同位置扇区合成一站） |
 | `DAYMAR` | 点 | — | `TOPSHP`（日标牌形状）；`COLOUR`（颜色） |
-| `RTPBCN` `RADRFL` `RDOSTA` `RADSTA` | 点 | — | — |
+| `RTPBCN` `RADRFL` `RDOSTA` `RADSTA` | 单点 Point | — | — |
 
 - 真实颜色已知时写 `COLOUR`。
 - 顶标、灯与浮标本体同位置时，分别写在各自的图层（`TOPMAR`、`LIGHTS`），与 S-57 一致。
