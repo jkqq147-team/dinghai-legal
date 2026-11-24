@@ -21,7 +21,7 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
   `dh_symbol` 取下列 13 个值之一，或在其后加 `+more`（符号旁多一个小“!”，表示 `RESTRN` 还有该符号没有表示的限制，例如 `noAnchoring+more`）；缺 `dh_symbol` 或取其他值的点不画（下文带 `ORIENT` 的方向箭头除外）。13 个值按相碰时先放的顺序是：`noEntry`（禁止或限制进入、避航区）、`noAnchoring`（禁止或限制锚泊）、`noFishing`（禁止或限制捕鱼、拖网）、`roundabout`（环形分道）、`caution`（注意）、`windFarm`（风电场）、`anchorage`（锚地）、`cable`（电缆区）、`farm`（养殖场）、`information`（信息）、`laneDirectionUndefined`（没有给出通航方向的航路，与通航分道箭头同色的“?”）、`trackDirectionUndefined`（没有给出通航方向的推荐航迹，灰色的“?”）、`laneTwoWayUpright`（屏幕上竖直的双向箭头，用于没有给出方向的深水航路段）。区域符号大小是点状符号的 1.3 倍。
 
-  带 `ORIENT` 的点画成方向箭头，样式由 `dh_symbol` 的前缀决定：`trafficLane:` 是通航分道的单向箭头；`track:` 是推荐航迹、航道用的灰色单向箭头；`twoWayLane:` 是与通航分道箭头同色、两端各有一个箭头的双向箭头；`twoWayTrack:` 是灰色的双向箭头。`ORIENT` 写 0–360 的数值，是箭头所指的方向（自真北顺时针的度数；双向箭头指向这个方向和它的反方向），箭头方向固定在地图上。箭头 10 级起淡入，10.5 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。箭头不参与上述避让，写一个点就在该点画一个。12 级及更深时箭头与点状符号同大，12 级以下逐渐缩小，10 级时为 12 级大小的一半。App 写这种点时，`dh_symbol` 是上述前缀之一后接同一度数（整数度不带小数，例如 `trafficLane:45`、`track:270`），`ORIENT` 是这个度数的数值；生产方请两项一起写。
+  带 `ORIENT` 的点画成方向箭头，样式由 `dh_symbol` 的前缀决定：`trafficLane:` 是通航分道的单向箭头；`track:` 是推荐航迹、航道用的灰色单向箭头；`twoWayLane:` 是与通航分道箭头同色、两端各有一个箭头的双向箭头；`twoWayTrack:` 不画（双向的推荐航迹、航道不画箭头）。`ORIENT` 写 0–360 的数值，是箭头所指的方向（自真北顺时针的度数；双向箭头指向这个方向和它的反方向），箭头方向固定在地图上。箭头 10 级起淡入，10.5 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。箭头不参与上述避让，写一个点就在该点画一个。12 级及更深时箭头与点状符号同大，12 级以下逐渐缩小，10 级时为 12 级大小的一半。App 写这种点时，`dh_symbol` 是上述前缀之一后接同一度数（整数度不带小数，例如 `trafficLane:45`、`track:270`），`ORIENT` 是这个度数的数值；生产方请两项一起写。
 
   App 从 S-57 生成海图、或为无 manifest 的矢量 MBTiles 生成这一层时（[7.2](/developers/chartset/vector-mbtiles/#7.2)），对 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`PRCARE`、`ISTZNE`、`OSPARE`、`TSSLPT`、`TSSRON`、`TSSCRS`、`DWRTPT`、`TWRTPT`、`RCTLPT`、`FAIRWY`、`RECTRC` 的面这样选符号：
 

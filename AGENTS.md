@@ -10,7 +10,7 @@ Starlight (Astro) site, published to GitHub Pages by `.github/workflows/pages.ym
 
 ## URLs do not change
 
-- Chinese is the root locale, English lives under `/en/`. These must keep working at the same paths: `/`, `/privacy/`, `/support/`, `/en/`, `/en/privacy/`, `/en/support/`. The App links to `https://dinghai.app/privacy/`.
+- Chinese is the root locale, English lives under `/en/`. These must keep working at the same paths: `/`, `/privacy/`, `/support/`, `/data-sources/`, `/en/`, `/en/privacy/`, `/en/support/`, `/en/data-sources/`. The App links to `https://dinghai.app/privacy/` and `https://dinghai.app/data-sources/`.
 - The chart set manual is Chinese only and lives under `/developers/chartset/`. Keep published page paths and numbered section anchors (for example `#1.1` and `#6.3`) unchanged.
 - `public/CNAME` stays `dinghai.app`.
 
