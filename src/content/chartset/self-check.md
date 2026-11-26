@@ -103,7 +103,7 @@ python3 generate-chartset-sample.py --output /tmp/minimal-chartset
 
 - 三档水深区依次为浅水蓝、浅青蓝、白色；小岛是陆地色，岸线、等深线是细线；这些从样例最浅的 10 级起就有。
 - 11 级起有水深数字；浮标与灯的符号 11.5 起淡入，12 级起完全显示；13 级起有等深线数值。在这之前都不画（[4.4](/developers/chartset/tiles/#4.4)）；浅于 11.5 时，灯只显示为绿色圆点。
-- 锚地（东南角）和禁锚区（西北角）都只有品红虚线边界，内部不填色（边界来自 `dh_boundary` 线）。10.5 级起淡入、11 级起完全显示各自的区域符号：锚地是 `anchorage`，禁锚区是 `noAnchoring`（来自 `dh_area_symbol` 点，各在区域正中）。符号的点被先放下的文字占住时（例如锚地名称，15 级起可显示，仍须避让其他文字），符号会尝试画在紧挨的位置上（[4.2](/developers/chartset/tiles/#4.2)）。
+- 锚地（东南角）和禁锚区（西北角）都只有品红虚线边界，内部不填色（边界来自 `dh_boundary` 线）。10.5 级起淡入、11 级起完全显示各自的区域符号：锚地是 `anchorage`，禁锚区是 `noAnchoring`（来自 `dh_area_symbol` 点，各在区域正中）。符号的点被先放下的文字占住时（例如锚地名称，15 级起可显示，仍须避让其他文字），该级直接省略该符号（[4.2](/developers/chartset/tiles/#4.2)）。
 - 把准星移进禁锚区（例如 `37.808534, -122.635916`），核对读数为“禁止锚泊　10–20米”。
 - 沉船位于 `37.803144, -122.628527`，12 级起各级准星读数都是“Sample Wreck · 6.5米”。它在 3 米安全水深下不是孤立危险物，符号 11.5 起才淡入，更浅时不画、读不到（[4.4](/developers/chartset/tiles/#4.4)）。
 - 水面 `37.799100, -122.625684` 放大后读数为“0–5米”；小岛内不显示水深。
@@ -119,10 +119,10 @@ App 导入时不检查瓦片内容，所以“导入成功，但地图上看不�
 | 某一类没有 | 当前缩放浅于 [4.4](/developers/chartset/tiles/#4.4) 表中相应画法的起画级别（有淡入的按淡入起点算）；source-layer 名不是大写 S-57 缩写；几何类型不对，例如航标写成线或面、面的边线没带 `dh_boundary`（[5.1](/developers/chartset/data/#5.1)）。 |
 | 水深区颜色不对 / 没有水深数字 | `DRVAL1`/`DRVAL2`/`DEPTH` 不是数值，或单位不是米；`SOUNDG` 没拆成单点；当前缩放浅于 11 级（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 符号是通用形状 | 选符号的属性缺失或值不对（[5.1](/developers/chartset/data/#5.1)），列表属性没有写成逗号串。 |
-| 限制区等区域没有区域符号，或比写入的点少 | 没有 `dh_area_symbol` 层；`dh_symbol` 缺失或不是 [4.2](/developers/chartset/tiles/#4.2) 列出的值；当前缩放浅于 10.5 级或该点的 `dh_minzoom`；这一级的瓦片没写这个点；点和周围八个位置都与已放下的文字或其他区域符号相碰（[4.2](/developers/chartset/tiles/#4.2)）。 |
+| 限制区等区域没有区域符号，或比写入的点少 | 没有 `dh_area_symbol` 层；`dh_symbol` 缺失或不是 [4.2](/developers/chartset/tiles/#4.2) 列出的值；当前缩放浅于 10.5 级或该点的 `dh_minzoom`；这一级的瓦片没写这个点；该点位置与已放下的文字或其他区域符号相碰而被省略（[4.2](/developers/chartset/tiles/#4.2)）。 |
 | 通航分道、航路等区域没有方向箭头 | 没有 `dh_area_symbol` 层，或那里的点没有数值字段 `ORIENT`（没有时按 `dh_symbol` 画区域符号）；当前缩放浅于 10 级或该点的 `dh_minzoom`；这一级的瓦片没写这个点（[4.2](/developers/chartset/tiles/#4.2)）。 |
 | 单向航线沿线的箭头指反了 | 线逆着通航方向数字化：App 照线的顶点顺序画箭头（[5.1](/developers/chartset/data/#5.1) E 组）。 |
-| 面状障碍物、沉船在浅水区里也画成孤立危险物 | 面上没有 `dh_drval1`，App 按在安全水域里处理（[4.4](/developers/chartset/tiles/#4.4) 表下）。 |
+| 面状沉船在浅水区里也画成孤立危险物 | 面上没有 `dh_drval1`，App 按在安全水域里处理（面状 `OBSTRN` 缺 `dh_drval1` 时不会画成孤立危险物，[4.4](/developers/chartset/tiles/#4.4) 表下）。 |
 | 扇区灯没有画成扇区，或同一位置的灯质有好几条、只剩其中一条 | 当前缩放浅于 11.5 级；`SECTR1`、`SECTR2` 缺失或不在 0–360，定向灯缺 `ORIENT` 或 `CATLIT` 不含 1、16；`dh_sectors` 无法解析。同一位置的多条记录没有写 `dh_sectors`、`dh_light_label` 时各画各的灯质，互相避让后可能只剩一条（[4.2](/developers/chartset/tiles/#4.2)、[5.1](/developers/chartset/data/#5.1) D 组）。 |
 | 潮流、海流没有箭头 | `ORIENT` 缺失或不在 0–360；写成了点以外的几何；当前缩放浅于 11.5 级（[5.1](/developers/chartset/data/#5.1) A 组、[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 某些缩放级别点选读不到 | 当前缩放浅于该画法的起画级别（有淡入的按淡入起点算）；或该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |

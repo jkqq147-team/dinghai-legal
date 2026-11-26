@@ -45,7 +45,7 @@ UTF-8 编码的 JSON 对象。App 不认识的字段一律忽略。
 | `id` | 字符串 | 海图集的逻辑身份（[2.3](/developers/chartset/manifest/#2.3)）。非空，不得以 `s57:` 开头。 |
 | `name` | 字符串 | 显示名，非空。 |
 | `source` | 对象 | `{"type": "external", "producer": "<生产方与工具名称、版本>"}`；`producer` 非空。 |
-| `bounds` | 对象 | `west`、`south`、`east`、`north`：数据覆盖范围的外包框，WGS84 经纬度（度）。经度在 −180…180，纬度在 −90…90，`south ≤ north`。另需 `west ≤ east`。 |
+| `bounds` | 对象 | `west`、`south`、`east`、`north`：数据覆盖范围的外包框，WGS84 经纬度（度）。经度在 −180…180，纬度在 −90…90，`south ≤ north`；导入校验不因 `west > east` 拒绝，跨 180° 经线（`west > east`）时，地图在纬度范围内按全经度（−180…180）加载瓦片（无 manifest 的单份矢量 MBTiles 不支持跨 180° 经线，其生成范围满足 `west ≤ east`，见 [7.1](/developers/chartset/vector-mbtiles/#7.1)）。 |
 | `minimumZoom`、`maximumZoom` | 整数 | `chart.mbtiles` 实际有瓦片的最浅、最深缩放级别，0–24，`minimumZoom ≤ maximumZoom`，与 metadata 的 `minzoom`、`maxzoom` 相同。 |
 | `overviewZoom` | 整数，可选（格式 1.1 起） | `overview.mbtiles` 唯一的那一级，`0 ≤ overviewZoom < maximumZoom`。写了就必须有 `overview.mbtiles`；不写就没有概览瓦片集（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
 | `createdAt` | 字符串 | 生成时间，RFC 3339 形式 `YYYY-MM-DDTHH:MM:SS`，可带小数秒，结尾是 `Z` 或 `±HH:MM`。秒不能省略，日期与时间之间用大写 `T`，不能用空格。推荐 UTC，例如 `2026-09-30T12:00:00Z`；也可写 `2026-09-30T12:00:00.123Z`、`2026-09-30T20:00:00+08:00`。 |
