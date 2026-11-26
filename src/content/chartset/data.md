@@ -65,7 +65,8 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `LNDMRK` | 面、边线、点 | — | `CATLMK`（点的符号）；`CONVIS`（醒目） |
 | `SILTNK` | 面、边线、点 | — | `CATSIL`（点的符号）；`CONVIS`（醒目） |
 | `WATTUR` `FOGSIG` | 点 | — | — |
-| `CGUSTA` `NEWOBJ` `SISTAW` `SISTAT` `CRANES` `FORSTC` `CTRPNT` `SLOGRD` | 点 | — | — |
+| `CGUSTA` `SISTAW` `SISTAT` `CRANES` `FORSTC` `CTRPNT` `SLOGRD` | 点 | — | — |
+| `NEWOBJ` | 点 | — | `dh_virtual_aid`（虚拟航标，见 [4.2](/developers/chartset/tiles/#4.2)） |
 
 - **净空**：`BRIDGE`、`CBLOHD`、`PIPOHD` 的 `VERCSA`（安全净空）、`VERCLR`（净空）、`VERCCL`（关闭净空）、`VERCOP`（开启净空）按米读，写成米制浮点（[4.2](/developers/chartset/tiles/#4.2)）。App 不换算单位，也不看源数据的 `HUNI`、`HUNITS`；源数据不是米的，写入前换算成米。负值和读不出数字的值，地图和准星读数不写。
 - 地图从 13 级起在物标旁写出净空，按安全净空、净空、关闭净空、开启净空的顺序，例如“净空 38.7米”。线（不含边线）在中点旁沿线写一行，各项用“ · ”隔开；一条线跨多张瓦片时，每张瓦片里的那一段各写一次；线短得放不下这行字时，这一级不写。`BRIDGE` 的面（大桥可以每一跨写一个面，各带自己的净空）把各项分行写在面内。这些文字与其他文字互相避让（[4.4](/developers/chartset/tiles/#4.4)）。
@@ -113,7 +114,8 @@ description: 各物标类的几何类型与必须、可选的属性；点选报�
 | `ACHARE` | 面、边线、点 | — | 名称（标注）；见表下 |
 | `PILBOP` | 面、边线、点 | — | 见表下 |
 | `RDOCAL` | 线、点 | — | `ORIENT`（点的方向符号；`TRAFIC` 为 4 时画成双向）；`COMCHA`（频道） |
-| `CBLSUB` `PIPSOL` | 线 | — | — |
+| `CBLSUB` | 线 | — | `CATCBL`（为 6 时较早显示，见 [4.4](/developers/chartset/tiles/#4.4)） |
+| `PIPSOL` | 线 | — | — |
 | `CBLOHD` `PIPOHD` | 线 | — | 净空属性（见 C 组表下） |
 
 - 在生产方提供的海图集中，本组写“面”的类，除 `TSEZNE` 的填色和 `SNDWAV` 的沙波图案外，面本身不画，看得见的是边线（[4.2](/developers/chartset/tiles/#4.2)）；`TSSLPT` 不画边线，看得见的只有它的方向箭头或区域符号；准星靠面读到这个区域（[5.2](/developers/chartset/data/#5.2)），只写边线的读不到。

@@ -116,7 +116,7 @@ App 导入时不检查瓦片内容，所以“导入成功，但地图上看不�
 | 整片都没有 | `tile_row` 写成了 XYZ 行号（应为 TMS，[3.2](/developers/chartset/mbtiles/#3.2)）；瓦片不是可解码的 MVT；metadata `minzoom`/`maxzoom` 与 manifest 不一致；当前缩放浅于 `minimumZoom`。 |
 | 放大过 `overviewZoom` 后某片变空白 | `chart.mbtiles` 深级别不写那里的数据，`overview.mbtiles` 也没补上（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
 | 放大过 `overviewZoom` 后两套叠在一起或有细缝 | 概览没有按深级别的覆盖范围裁切，或裁切线又被简化（[3.3](/developers/chartset/mbtiles/#3.3)）。 |
-| 某一类没有 | 当前缩放浅于 [4.4](/developers/chartset/tiles/#4.4) 表中该类的显示级别；source-layer 名不是大写 S-57 缩写；几何类型不对，例如航标写成线或面、面的边线没带 `dh_boundary`（[5.1](/developers/chartset/data/#5.1)）。 |
+| 某一类没有 | 当前缩放浅于 [4.4](/developers/chartset/tiles/#4.4) 表中相应画法的起画级别（有淡入的按淡入起点算）；source-layer 名不是大写 S-57 缩写；几何类型不对，例如航标写成线或面、面的边线没带 `dh_boundary`（[5.1](/developers/chartset/data/#5.1)）。 |
 | 水深区颜色不对 / 没有水深数字 | `DRVAL1`/`DRVAL2`/`DEPTH` 不是数值，或单位不是米；`SOUNDG` 没拆成单点；当前缩放浅于 11 级（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 符号是通用形状 | 选符号的属性缺失或值不对（[5.1](/developers/chartset/data/#5.1)），列表属性没有写成逗号串。 |
 | 限制区等区域没有区域符号，或比写入的点少 | 没有 `dh_area_symbol` 层；`dh_symbol` 缺失或不是 [4.2](/developers/chartset/tiles/#4.2) 列出的值；当前缩放浅于 10.5 级或该点的 `dh_minzoom`；这一级的瓦片没写这个点；点和周围八个位置都与已放下的文字或其他区域符号相碰（[4.2](/developers/chartset/tiles/#4.2)）。 |
@@ -125,7 +125,7 @@ App 导入时不检查瓦片内容，所以“导入成功，但地图上看不�
 | 面状障碍物、沉船在浅水区里也画成孤立危险物 | 面上没有 `dh_drval1`，App 按在安全水域里处理（[4.4](/developers/chartset/tiles/#4.4) 表下）。 |
 | 扇区灯没有画成扇区，或同一位置的灯质有好几条、只剩其中一条 | 当前缩放浅于 11.5 级；`SECTR1`、`SECTR2` 缺失或不在 0–360，定向灯缺 `ORIENT` 或 `CATLIT` 不含 1、16；`dh_sectors` 无法解析。同一位置的多条记录没有写 `dh_sectors`、`dh_light_label` 时各画各的灯质，互相避让后可能只剩一条（[4.2](/developers/chartset/tiles/#4.2)、[5.1](/developers/chartset/data/#5.1) D 组）。 |
 | 潮流、海流没有箭头 | `ORIENT` 缺失或不在 0–360；写成了点以外的几何；当前缩放浅于 11.5 级（[5.1](/developers/chartset/data/#5.1) A 组、[4.4](/developers/chartset/tiles/#4.4)）。 |
-| 某些缩放级别点选读不到 | 浅于 [4.4](/developers/chartset/tiles/#4.4) 所列的显示级别时，该类物标本来就不显示、也点选不到；或该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |
+| 某些缩放级别点选读不到 | 当前缩放浅于该画法的起画级别（有淡入的按淡入起点算）；或该物标只写进了部分级别（[4.4](/developers/chartset/tiles/#4.4)）。 |
 | 详情少了属性 | 属性名不是 S-57 目录里的缩写，或只写在了部分缩放级别（[5.2](/developers/chartset/data/#5.2)）。 |
 
 ## 6.5 没有命令行校验器
