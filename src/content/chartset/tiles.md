@@ -104,6 +104,10 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | 8 | 7.5 起 | `CBLSUB` | `CATCBL` 为 6 的线 |
   | 8 | 7.5 起 | `OBSTRN` `WRECKS` `UWTROC` | 画成孤立危险物的点；`OBSTRN`、`WRECKS` 的面也是，符号画在面的中央（例外见表下） |
   | 8 | — | `LIGHTS` | 点，画成灯色圆点（`dh_sectors` 为 `hub` 的不画）；11.5–12 淡出，由灯光符号接替 |
+  | 9 | — | `SLCONS` `BRIDGE` `CAUSWY` `DAMCON` `DYKCON` `PONTON` `FLODOC` `HULKES` `DRYDOC` `PYLONS` `GATCON` | 面和边线 |
+  | 9 | — | `SLCONS` `BRIDGE` `CAUSWY` `DAMCON` `DYKCON` `PONTON` `FLODOC` `GATCON` `CONVYR` `OILBAR` `CANALS` `RIVERS` `CBLOHD` `PIPOHD` | 线 |
+  | 9 | — | `BUISGL` `RUNWAY` `SILTNK` `LNDMRK` `PRDARE` `AIRARE` | 面和边线 |
+  | 9 | — | `TUNNEL` | 边线 |
   | 10 | — | `SEAARE` | 带 `CATSEA` 的名称 |
   | 10.5 | 10 起 | `dh_area_symbol` | 带 `ORIENT` 的点，画成方向箭头（[4.2](/developers/chartset/tiles/#4.2)） |
   | 10.5 | 10 起 | `RECTRC` `DWRTCL` `RCRTCL` | 线上重复的方向箭头或“?”（[5.1](/developers/chartset/data/#5.1) E 组） |
@@ -139,7 +143,7 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | 15 | — | `LIGHTS` | 灯质，后接灯高和射程，例如 `Fl.4s 12m 8M`（主记录写了 `dh_light_label` 时显示它；`dh_sectors` 为 `hub` 的不画） |
 
   孤立危险物由 App 按用户设置的安全水深判定（S-52 的孤立危险物规则），与 `VALSOU`、`WATLEV`、`CATWRK`、`CATOBS` 和 `dh_drval1`（[4.2](/developers/chartset/tiles/#4.2)）有关。其中没有 `VALSOU`、没有 `dh_drval1`、`WATLEV` 未写或为 3 的，除 `CATWRK` 为 1、2、4、5 的 `WRECKS` 和 `CATOBS` 为 6 的 `OBSTRN` 外，也到 12 级才完全显示（11.5 起淡入）。`OBSTRN`、`WRECKS` 的面按同一规则判定，用面上的 `dh_drval1`；`CATOBS` 为 7、8、10 或 `WATLEV` 为 7 的 `OBSTRN` 面除外，它们不画成孤立危险物。没有 `dh_drval1` 的点或面，按在安全水域里处理：按 `VALSOU`（没有时按 `WATLEV`、`CATWRK`、`CATOBS` 的缺省值）算是危险物、`WATLEV` 又不是 1、2 的，就画成孤立危险物。所以面状 `OBSTRN`、`WRECKS` 不写 `dh_drval1` 时，即使整个面落在浅于安全水深的水深区里，也可能在面的中央画出孤立危险物符号。
-- 表里没有的物标类和画法没有显示级别的限制，例如水深区 `DEPARE`、`DRGARE`（包括浅水图案），`LNDARE` 的面、线和点（小岛），岸线 `COALNE`，直线基线 `STSLNE`，安全等深线和干出线，架空的 `CBLOHD`、`PIPOHD` 的线，`OBSTRN`、`WRECKS` 的面、边线和线（包括 `OBSTRN` 面上的碍航图案），`SBDARE` 的边线、线和礁石图案，`SNDWAV` 的沙波图案和线，建筑物 `PYLONS`、`GATCON`、`OFSPLF` 的面和边线，陆上的 `SILTNK`、`LNDMRK`、`PRDARE`、`AIRARE` 的面和边线，`PONTON`、`FLODOC`、`GATCON`、`CONVYR`、`OILBAR`、`CANALS`、`RIVERS` 的线，以及 `TUNNEL` 的边线。
+- 表里没有的物标类和画法没有显示级别的限制，例如水深区 `DEPARE`、`DRGARE`（包括浅水图案），`LNDARE` 的面、线和点（小岛），岸线 `COALNE`，直线基线 `STSLNE`，安全等深线和干出线，`CANALS`、`DOCARE`、`LOKBSN`、`LAKARE`、`RIVERS` 的面，`OBSTRN`、`WRECKS` 的面、边线和线（包括 `OBSTRN` 面上的碍航图案），`SBDARE` 的边线、线和礁石图案，`SNDWAV` 的沙波图案和线，`BUAARE`、`OFSPLF` 的面和边线。
 - 文字（水深数字、名称、灯质、危险物的水深、等深线数值、潮流和海流的流速或说明、航线方位、锚位编号、无线电报告点频道、净空）和 `SBDARE` 底质会互相避让，放不下的不画。水深点只画成数字，数字被让掉时，那个水深点在这一级也点选不到。
 - 一类物标的每种画法都在表中时，`chart.mbtiles` 里比其中最早开始画出（有淡入的按开始淡入算）的缩放所在那一级更浅的级别，写进这类物标也不会画出、点选不到，可以不写。例如 `FOGSIG` 从 11.5 级起淡入，要从淡入阶段就显示，须写入第 11 级瓦片；第 10 级及更浅的瓦片可以不写。两处例外照常写：最深一级（`maxzoom`）在更深的缩放放大使用，`overview.mbtiles` 在深于 `overviewZoom` 的各级放大使用（[3.3](/developers/chartset/mbtiles/#3.3)）。`DEPCNT` 和 `OBSTRN`、`WRECKS` 还有不在表中的画法（安全等深线和干出线；面、边线和线），哪条是安全等深线、哪个点是孤立危险物又随用户设置的安全水深而变，所以浅级别也照常写。写进去的级别，仍按第一条带齐属性。
 - 用途带（S-57 INTU，1 概览 … 6 靠泊）不是瓦片字段。生产方自行决定每个缩放级别用哪个比例尺的数据，原则是**同一级别、同一位置只放一套数据**：两套重叠时两套都会显示，点选也可能报告两套。有概览瓦片集时，`chart.mbtiles` 与放大后的 `overview.mbtiles` 合起来算（[3.3](/developers/chartset/mbtiles/#3.3)）。
