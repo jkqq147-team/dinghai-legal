@@ -41,7 +41,7 @@ description: 定海 App 隐私政策：处理哪些数据、用来做什么、�
 ### Apple 的服务
 
 - 设备定位、通知和实时活动使用 Apple 的 Core Location、UserNotifications、ActivityKit 等系统服务。
-- Apple 地图样式使用 MapKit：显示 Apple 地图时，定海会向 Apple 地图服务请求你所查看区域（包括你打开的搜索结果）的地图。开始守锚时，定海会把锚点坐标发送给 Apple 地图服务，查询附近地名作为守锚记录的自动名称。
+- 海图覆盖预览与 NOAA 海图地图使用 MapKit：在“离线海图”里查看海图覆盖范围地图或 NOAA 海图地图时，定海会向 Apple 地图服务请求所显示区域的地图。开始守锚时，定海会把锚点坐标发送给 Apple 地图服务，查询附近地名作为守锚记录的自动名称。
 - 账户登录使用“通过 Apple 登录”；跨设备提醒通过 Apple 推送通知服务（APNs）发送。
 
 Apple 对这些服务的数据处理适用其自身的隐私政策。

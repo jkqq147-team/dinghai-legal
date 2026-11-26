@@ -41,7 +41,7 @@ Diagnostic reports are also sent to DingHai servers (see Section 7). For trouble
 ### Apple services
 
 - Device location, notifications, and Live Activities use Apple system services, including Core Location, UserNotifications, and ActivityKit.
-- Apple map styles use MapKit: when the Apple map is shown, DingHai requests the map of the area you view (including a search result you open) from Apple Maps services. When an anchor watch starts, DingHai sends the anchor coordinates to Apple Maps services to look up a nearby place name as the anchor-watch record's automatic name.
+- The chart coverage map and the NOAA Charts map use MapKit: when you view a chart coverage map or the NOAA Charts map in “Offline Charts”, DingHai requests the map of the area shown from Apple Maps services. When an anchor watch starts, DingHai sends the anchor coordinates to Apple Maps services to look up a nearby place name as the anchor-watch record's automatic name.
 - Account sign-in uses Sign in with Apple; cross-device alerts are sent through the Apple Push Notification service (APNs).
 
 Apple's own privacy policy applies to its processing through those services.
