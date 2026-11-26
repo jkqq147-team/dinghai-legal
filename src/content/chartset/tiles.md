@@ -21,7 +21,7 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
   `dh_symbol` 取下列 13 个值之一，或在其后加 `+more`（符号旁多一个小“!”，表示 `RESTRN` 还有该符号没有表示的限制，例如 `noAnchoring+more`）；缺 `dh_symbol` 或取其他值的点不画（下文带 `ORIENT` 的方向箭头除外）。13 个值按相碰时先放的顺序是：`noEntry`（禁止或限制进入、避航区）、`noAnchoring`（禁止或限制锚泊）、`noFishing`（禁止或限制捕鱼、拖网）、`roundabout`（环形分道）、`caution`（注意）、`windFarm`（风电场）、`anchorage`（锚地）、`cable`（电缆区）、`farm`（养殖场）、`information`（信息）、`laneDirectionUndefined`（没有给出通航方向的航路，与通航分道箭头同色的“?”）、`trackDirectionUndefined`（没有给出通航方向的推荐航迹，灰色的“?”）、`laneTwoWayUpright`（屏幕上竖直的双向箭头，用于没有给出方向的深水航路段）。区域符号大小是点状符号的 1.3 倍。
 
-  带 `ORIENT` 的点画成方向箭头，样式由 `dh_symbol` 的前缀决定：`trafficLane:` 是通航分道的单向箭头；`track:` 是推荐航迹、航道用的灰色单向箭头；`twoWayLane:` 是与通航分道箭头同色、两端各有一个箭头的双向箭头；`twoWayTrack:` 不画（双向的推荐航迹、航道不画箭头）。`ORIENT` 写 0–360 的数值，是箭头所指的方向（自真北顺时针的度数；双向箭头指向这个方向和它的反方向），箭头方向固定在地图上。箭头 10 级起淡入，10.5 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。箭头不参与上述避让，写一个点就在该点画一个。12 级及更深时箭头与点状符号同大，12 级以下逐渐缩小，10 级时为 12 级大小的一半。App 写这种点时，`dh_symbol` 是上述前缀之一后接同一度数（整数度不带小数，例如 `trafficLane:45`、`track:270`），`ORIENT` 是这个度数的数值；生产方请两项一起写。
+  带 `ORIENT` 的点画成方向箭头，样式由 `dh_symbol` 的前缀决定：`trafficLane:` 是通航分道的单向箭头；`track:` 是推荐航迹、航道用的灰色单向箭头；`twoWayLane:` 是与通航分道箭头同色、两端各有一个箭头的双向箭头；`twoWayTrack:` 不画（双向的推荐航迹、航道不画箭头）。`ORIENT` 写 0–360 的数值，是箭头所指的方向（自真北顺时针的度数；双向箭头指向这个方向和它的反方向），箭头方向固定在地图上。箭头 10 级起淡入，10.5 级起完全显示；写了 `dh_minzoom` 的点，浅于该级不画。箭头不参与上述避让，写一个点就在该点画一个。箭头大小按缩放级别线性插值：10 级为 8 pt，12 级为 18 pt，14 级为 24 pt，15 级及更深为 30 pt；12 级起大于普通点状符号，以突出航道流向。App 写这种点时，`dh_symbol` 是上述前缀之一后接同一度数（整数度不带小数，例如 `trafficLane:45`、`track:270`），`ORIENT` 是这个度数的数值；生产方请两项一起写。
 
   App 从 S-57 生成海图、或为无 manifest 的矢量 MBTiles 生成这一层时（[7.2](/developers/chartset/vector-mbtiles/#7.2)），对 `RESARE`、`CTNARE`、`ACHARE`、`MIPARE`、`DMPGRD`、`SPLARE`、`MARCUL`、`CBLARE`、`PIPARE`、`PRCARE`、`ISTZNE`、`OSPARE`、`TSSLPT`、`TSSRON`、`TSSCRS`、`DWRTPT`、`TWRTPT`、`RCTLPT`、`FAIRWY`、`RECTRC` 的面这样选符号：
 
@@ -59,6 +59,7 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
 
   “值未知”的属性不要写（不要写空串或 0）。
 - **深度一律米**：`DRVAL1`、`DRVAL2`、`VALDCO`、`VALSOU`、`DEPTH` 都是米制，正值向下，负值是干出高度。
+- **等深线分级**：主档等深线包括 `VALDCO` 为 0、2、5、10、15、20、30、50、100、200、500、1000、2000、3000、4000、5000 米的线、没有 `VALDCO` 的线，以及数值等于用户当前所选安全水深或深水等深线的线；主档默认显示。其余精细加密等深线只在地图图层的「精细等深线」开关打开时显示（默认关闭），且永不标数。安全等深线和 `VALDCO` 为 0 的干出线另按各自画法显示。13 级起仅对有 `VALDCO` 的主档等深线标数（[4.4](/developers/chartset/tiles/#4.4)）。
 - **定海派生字段**用 `dh_` 前缀；例外是 `SOUNDG` 的 `DEPTH`（[5.1](/developers/chartset/data/#5.1) A 组）。
 
   | 字段 | 值 | 含义 |
@@ -132,13 +133,14 @@ description: 瓦片的坐标系与编码、图层与属性、几何、缩放级�
   | 13 | 12.5 起 | `NEWOBJ` | 不带 `dh_virtual_aid` 的点 |
   | 13 | 12.5 起 | `ACHBRT` `PILBOP` | 面中央的符号 |
   | 13 | — | `RDOCAL` | 点旁的频道（`COMCHA`，写成 `Ch 12` 的形式） |
-  | 13 | — | `DEPCNT` | 等深线数值 |
+  | 13 | — | `DEPCNT` | 有 `VALDCO` 的主档等深线数值；精细等深线不标数 |
   | 13 | — | `BRIDGE` `CBLOHD` `PIPOHD` | 净空（[5.1](/developers/chartset/data/#5.1) C 组）：线在中点旁沿线写一行，`BRIDGE` 的面在面内分行写 |
   | 14 | 13.5 起 | `BUISGL` `PILPNT` `WEDKLP` `CGUSTA` `CRANES` `AIRARE` `CTRPNT` `LNDELV` `SLOGRD` | 点 |
+  | 14 | — | `ACHARE` | 名称 |
   | 14.5 | 13.5 起 | `CBLSUB` `PIPSOL` | 线（`CBLSUB` 中 `CATCBL` 为 6 的除外） |
   | 15 | 14.5 起 | `SBDARE` | 点（底质）；`WATLEV` 为 3、4 的面，在面的中央写底质，画礁石图案的面除外（[5.1](/developers/chartset/data/#5.1) F 组） |
   | 15 | — | `ACHBRT` | 符号旁的 `OBJNAM`（锚位编号），点和面都写 |
-  | 15 | — | `ACHARE` `HRBFAC` `SMCFAC` `BERTHS`，航标本体（`BOYLAT` … `LITVES` 共 12 类） | 名称 |
+  | 15 | — | `HRBFAC` `SMCFAC` `BERTHS`，航标本体（`BOYLAT` … `LITVES` 共 12 类） | 名称 |
   | 15 | — | `TS_FEB` `CURENT` | 流速（`CURVEL`）或说明（`INFORM`） |
   | 15 | — | `LIGHTS` | 灯质，后接灯高和射程，例如 `Fl.4s 12m 8M`（主记录写了 `dh_light_label` 时显示它；`dh_sectors` 为 `hub` 的不画） |
 
